@@ -54,31 +54,32 @@ def load_data():
         print(f'\rMoved remaining {len(batch)} files', end='')
 
 
-    train_transforms = torchvision.transforms.Compose([
-            torchvision.transforms.ColorJitter(brightness=0.1,contrast=0.1,saturation=0.1),
-            torchvision.transforms.RandomAffine(15),
-            torchvision.transforms.RandomHorizontalFlip(),
-            torchvision.transforms.RandomRotation(15),
-            torchvision.transforms.Resize((224,224)),
-            torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-    ])
-    valid_transforms = torchvision.transforms.Compose([
-            torchvision.transforms.Resize((224,224)),
-            torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-    ])
+    # train_transforms = torchvision.transforms.Compose([
+    #         torchvision.transforms.ColorJitter(brightness=0.1,contrast=0.1,saturation=0.1),
+    #         torchvision.transforms.RandomAffine(15),
+    #         torchvision.transforms.RandomHorizontalFlip(),
+    #         torchvision.transforms.RandomRotation(15),
+    #         torchvision.transforms.Resize((224,224)),
+    #         torchvision.transforms.ToTensor(),
+    #         torchvision.transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
+    # ])
+    # valid_transforms = torchvision.transforms.Compose([
+    #         torchvision.transforms.Resize((224,224)),
+    #         torchvision.transforms.ToTensor(),
+    #         torchvision.transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
+    # ])
 
 
-    train_dataset = torchvision.datasets.ImageFolder(path + '/images/', transform=train_transforms)
-    valid_dataset = torchvision.datasets.ImageFolder(path + '/testset/', transform=valid_transforms)
+    # train_dataset = torchvision.datasets.ImageFolder(path + '/images/', transform=train_transforms)
+    # valid_dataset = torchvision.datasets.ImageFolder(path + '/testset/', transform=valid_transforms)
 
 
-    batch_size = 128
-    train_loader = torch.utils.data.DataLoader(train_dataset,batch_size,shuffle=True,num_workers=4,pin_memory=True)
-    valid_loader = torch.utils.data.DataLoader(valid_dataset,batch_size,shuffle=False,num_workers=4,pin_memory=True)
+    # batch_size = 128
+    # train_loader = torch.utils.data.DataLoader(train_dataset,batch_size,shuffle=True,num_workers=4,pin_memory=True)
+    # valid_loader = torch.utils.data.DataLoader(valid_dataset,batch_size,shuffle=False,num_workers=4,pin_memory=True)
 
-    return train_loader, valid_loader
+    # return train_loader, valid_loader
+    return 
 
 if __name__ == "__main__":
     load_data()
