@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 from torchvision.models import resnet50
 
+
 class CustomResNet50(nn.Module):
     def __init__(self, num_classes, pretrained=True):
         super(CustomResNet50, self).__init__()
@@ -40,5 +41,31 @@ class CustomResNet50(nn.Module):
             return x
         
 
-
+class SimpleCNN(nn.Module):
+    def __init__(self, num_classes, x_dim):
+        super(SimpleCNN, self).__init__()
         
+        # Convolutional layers
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1)
+        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
+        
+        # Fully connected layers
+        self.fc1 = nn.Linear(x_dim, 128)  # Assuming input image size is 32x32
+        self.fc2 = nn.Linear(128, num_classes)
+        
+        # Max Pooling Layer
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+
+    def forward(self, x):
+        # Apply convolutional layers with ReLU activations
+        x = self.pool(torch.relu(self.conv1(x)))
+        x = self.pool(torch.relu(self.conv2(x)))
+        
+        # Flatten the tensor
+        x = torch.flatten(x, 1)
+        
+        # Pass through fully connected layers
+        x = torch.relu(self.fc1(x))
+        x = self.fc2(x)  # Final output layer (no activation here for classification)
+        
+        return x
