@@ -287,7 +287,7 @@ rpds-py==0.22.3
 rsa==4.9
 ruamel.yaml==0.18.8
 ruamel.yaml.clib==0.2.12
-ruff==0.8.4
+ruff==0.9.1
 safetensors==0.5.0
 schema==0.7.7
 scikit-learn==1.5.2
