@@ -17,11 +17,11 @@ import kagglehub
 
 def load_data():
 
-    # hparams = config['hyperparameters']
-
+    # hparams = config['hyperparameters']   
+    print("Starting download")
     # Download latest version
     path = kagglehub.dataset_download("kmader/food41")
-
+    print("Downloaded to", path)
     import os
     for dirname, _, filenames in os.walk('/kaggle/input'):
         for filename in filenames:
