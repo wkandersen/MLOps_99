@@ -10,11 +10,11 @@ class CustomResNet50(nn.Module):
         # Load the pretrained ResNet50 model
         self.resnet = resnet50(weights=weights)
         
-        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, num_classes)
+        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, 2048)
 
         # Add a custom fully connected layer (optional, depending on `x_dim`)
         if x_dim:
-            self.resnet.fc1 = nn.Linear(x_dim, 2048)
+            self.resnet.fc1 = nn.Linear(2048, num_classes)
         
         # Add Dropout layer
         self.dropout = nn.Dropout(dropout_rate)  # Dropout with a probability of 50%
@@ -40,10 +40,15 @@ class CustomResNet50(nn.Module):
             # Flatten the output from the ResNet50
             x = torch.flatten(x, 1)  # Flatten all dimensions except batch size
             
-            # Pass through custom fully connected layers, but first dropout on 0.5
-
+            # Pass through custom fully connected layers with dropout
             x = self.resnet.fc(x)
-            x = self.resnet.fc1(x)
+            
+            # Apply dropout after the first fully connected layer (fc)
+            x = self.dropout(x)
+            
+            # If you added fc1, pass it through as well
+            if hasattr(self.resnet, 'fc1'):
+                x = self.resnet.fc1(x)
 
             
             return x
