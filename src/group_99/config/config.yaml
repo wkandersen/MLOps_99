@@ -8,4 +8,4 @@ hyperparameters:
   seed: 123
   num_classes: 101
   dropout_rate: 0.5
-  weights: models.ResNet50_Weights.IMAGENET1K_V1
+  weights: "models.ResNet50_Weights.IMAGENET1K_V1"
