@@ -5,15 +5,19 @@ from torchvision import models
 
 
 class CustomResNet50(nn.Module):
-    def __init__(self, num_classes, weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=None):
+    def __init__(self, num_classes, weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=None, dropout_rate=0.5):
         super(CustomResNet50, self).__init__()
         # Load the pretrained ResNet50 model
         self.resnet = resnet50(weights=weights)
         
-        # layers go from 2048 to 1024 to 512 to num_classes
-        # Change the output layer to num_classes
-        self.resnet.fc1 = nn.Linear(x_dim, 2048)
-        self.resnet.fc = nn.Linear(2048, num_classes)
+        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, num_classes)
+
+        # Add a custom fully connected layer (optional, depending on `x_dim`)
+        if x_dim:
+            self.resnet.fc1 = nn.Linear(x_dim, 2048)
+        
+        # Add Dropout layer
+        self.dropout = nn.Dropout(dropout_rate)  # Dropout with a probability of 50%
 
 
     
@@ -36,8 +40,8 @@ class CustomResNet50(nn.Module):
             # Flatten the output from the ResNet50
             x = torch.flatten(x, 1)  # Flatten all dimensions except batch size
             
-            # Pass through custom fully connected layers
-            x = nn.Dropout(0.5)
+            # Pass through custom fully connected layers, but first dropout on 0.5
+
             x = self.resnet.fc(x)
             x = self.resnet.fc1(x)
 

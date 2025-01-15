@@ -6,6 +6,7 @@ from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
 import hydra
 from torchvision.models import resnet50
+from torchvision import models
 
 
 # loading
@@ -16,7 +17,7 @@ def train(config):
     hparams = config['hyperparameters']
 
     # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    model = CustomResNet50(num_classes=hparams['num_classes'], x_dim=hparams['x_dim'])
+    model = CustomResNet50(num_classes=hparams['num_classes'], x_dim=hparams['x_dim'], weights=config["weights"], dropout_rate=config["dropout_rate"])
     optimizer = Adam(model.parameters(), hparams["lr"])
     criterion = CrossEntropyLoss()
 
