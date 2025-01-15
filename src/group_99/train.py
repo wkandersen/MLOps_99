@@ -16,13 +16,16 @@ def train(config):
     hparams = config['hyperparameters']
 
     # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    model = resnet50(pretrained=True)
+    model = CustomResNet50(num_classes=hparams['num_classes'], pretrained=True, x_dim=hparams['x_dim'])
     optimizer = Adam(model.parameters(), hparams["lr"])
     criterion = CrossEntropyLoss()
 
     if cuda:
         model = model.cuda()
         criterion = criterion.cuda()
+
+    train_loader, valid_loader, train_subset_new = load_data()
+
     for epoch in range(hparams['epochs']):
         # Training
 
@@ -31,7 +34,6 @@ def train(config):
 
 
         # Load data
-        train_loader, valid_loader, train_subset_new = load_data()
 
         #create subset of dataa
 

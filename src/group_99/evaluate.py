@@ -25,8 +25,8 @@ def evaluate(config):
 
     print("Evaluating like my life depended on it")
     hparams = config['hyperparameters']
-    model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    model.load_state_dict(torch.load(model_checkpoint))
+    model = CustomResNet50(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
+    model.load_state_dict(torch.load(model_checkpoint), weights_only=True)
     model.eval()
     #Initialize 
     
