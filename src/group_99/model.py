@@ -77,3 +77,7 @@ class SimpleCNN(nn.Module):
         x = self.fc2(x)  # Final output layer (no activation here for classification)
         
         return x
+
+
+
+

@@ -15,9 +15,9 @@ cuda = torch.cuda.is_available()
 
 def train(config):
     hparams = config['hyperparameters']
-
+    print(hparams["weights"])    
     # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    model = CustomResNet50(num_classes=hparams['num_classes'], weights=hparams["weights"], x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
+    model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
     optimizer = Adam(model.parameters(), hparams["lr"])
     criterion = CrossEntropyLoss()
 
