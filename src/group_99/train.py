@@ -17,7 +17,7 @@ def train(config):
     hparams = config['hyperparameters']
 
     # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    model = CustomResNet50(num_classes=hparams['num_classes'], x_dim=hparams['x_dim'], weights=config["weights"], dropout_rate=config["dropout_rate"])
+    model = CustomResNet50(num_classes=hparams['num_classes'], weights=config["weights"], x_dim=hparams['x_dim'], dropout_rate=config["dropout_rate"])
     optimizer = Adam(model.parameters(), hparams["lr"])
     criterion = CrossEntropyLoss()
 

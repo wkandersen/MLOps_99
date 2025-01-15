@@ -25,7 +25,7 @@ def evaluate(config):
 
     print("Evaluating like my life depended on it")
     hparams = config['hyperparameters']
-    model = CustomResNet50(num_classes=hparams['num_classes'], x_dim=hparams['x_dim'], weights=config["weights"], dropout_rate=config["dropout_rate"])
+    model = CustomResNet50(num_classes=hparams['num_classes'], weights=config["weights"], x_dim=hparams['x_dim'], dropout_rate=config["dropout_rate"])
     model.load_state_dict(torch.load(model_checkpoint), weights_only=True)
     model.eval()
     #Initialize 
