@@ -12,7 +12,7 @@ class CustomResNet50(nn.Module):
         
         # layers go from 2048 to 1024 to 512 to num_classes
         # Change the output layer to num_classes
-        self.resnet.fc1 = torch.nn.linear(x_dim, 2048)
+        self.resnet.fc1 = nn.linear(x_dim, 2048)
         self.resnet.fc = nn.Linear(2048, num_classes)
 
 
