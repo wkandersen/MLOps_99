@@ -5,6 +5,9 @@ from tqdm import tqdm
 from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
 import hydra
+from torchvision.models import resnet50
+from torchvision import models
+
 
 # loading
 cuda = torch.cuda.is_available()
@@ -12,14 +15,17 @@ cuda = torch.cuda.is_available()
 
 def train(config):
     hparams = config['hyperparameters']
-
-    model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
+    # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
+    model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
     optimizer = Adam(model.parameters(), hparams["lr"])
     criterion = CrossEntropyLoss()
 
     if cuda:
         model = model.cuda()
         criterion = criterion.cuda()
+
+    train_loader, valid_loader, train_subset_new = load_data()
+
     for epoch in range(hparams['epochs']):
         # Training
 
@@ -28,7 +34,6 @@ def train(config):
 
 
         # Load data
-        train_loader, valid_loader, train_subset_new = load_data()
 
         #create subset of dataa
 
@@ -52,7 +57,7 @@ def train(config):
             correct += (out == lbl).sum().item()
             loss.backward()
             optimizer.step()
-            tbar.set_description(f"Epoch: {epoch+1}, loss: {loss.item():.5f}, acc: {100.0*correct/((i+1)*train_subset_new.batch_size):.4f}%")
+            tbar.set_description(f"Epoch: {epoch+1}, loss: {loss.item():.5f}, acc: {100.0*correct/((i+1)*train_loader.batch_size):.4f}%")
         train_acc = 100.0*correct/len(train_loader.dataset)
         train_loss /= (len(train_loader.dataset)/hparams['batch_size'])
 

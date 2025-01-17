@@ -10,6 +10,7 @@ from torch.utils.tensorboard import SummaryWriter
 from torchvision.models.resnet import resnet50
 writer = SummaryWriter() # For Tensorboard
 import hydra
+from torchvision import models
 
 model_name = 'models/model.pth'
 cuda = False
@@ -25,8 +26,8 @@ def evaluate(config):
 
     print("Evaluating like my life depended on it")
     hparams = config['hyperparameters']
-    model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    model.load_state_dict(torch.load(model_checkpoint))
+    model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
+    model.load_state_dict(torch.load(model_checkpoint), weights_only=True)
     model.eval()
     #Initialize 
     

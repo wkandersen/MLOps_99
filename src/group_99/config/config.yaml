@@ -4,6 +4,7 @@ hyperparameters:
   latent_dim: 20
   batch_size: 128
   lr: 0.01
-  epochs: 2
+  epochs: 10
   seed: 123
   num_classes: 101
+  dropout_rate: 0.5
