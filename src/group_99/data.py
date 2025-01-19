@@ -38,8 +38,11 @@ def load_data():
         path = dataset_path
     else:
         print("Starting download")
-        path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
-        print(f"Dataset downloaded at {path}")
+        try:
+            path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
+            print(f"Dataset downloaded at {path}")
+        except Exception as e:
+            raise RuntimeError("Dataset download failed") from e
 
     classes=[]
     paths=[]
@@ -153,7 +156,5 @@ class ImageDataset(pl.LightningDataModule):
         return DataLoader(self.val_dataset, batch_size=self.batch_size)
 
 
-
-
-    
-# if __name__ == "__main__":
+if __name__ == "__main__":
+    load_data()

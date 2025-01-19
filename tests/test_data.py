@@ -1,10 +1,12 @@
-from torch.utils.data import Dataset
 import os
 import pytest
 import torch
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, mock_open
+from torchvision import datasets
+from torch.utils.data import DataLoader
 
-from src.group_99.data import load_data
+from src.group_99.data import load_data, CustomDataset, ImageDataset
+
 
 @pytest.fixture
 def mock_kagglehub(tmp_path):
@@ -12,53 +14,21 @@ def mock_kagglehub(tmp_path):
     Mock the kagglehub.dataset_download function and create a fake directory structure.
     """
     # Mock dataset download path
-    fake_dataset_path = str(tmp_path / "food41")
+    fake_dataset_path = str(tmp_path / "sea_animals")
 
     # Create directory structure
-    os.makedirs(os.path.join(fake_dataset_path, "meta", "meta"), exist_ok=True)
-    os.makedirs(os.path.join(fake_dataset_path, "images", "apple_pie"), exist_ok=True)
-    os.makedirs(os.path.join(fake_dataset_path, "images", "waffles"), exist_ok=True)
+    os.makedirs(os.path.join(fake_dataset_path, "class1"), exist_ok=True)
+    os.makedirs(os.path.join(fake_dataset_path, "class2"), exist_ok=True)
 
-    # Mock classes.txt
-    with open(os.path.join(fake_dataset_path, "meta", "meta", "classes.txt"), "w") as f:
-        f.write("apple_pie\n")
-        f.write("waffles\n")
-
-    # Mock test.txt
-    with open(os.path.join(fake_dataset_path, "meta", "meta", "test.txt"), "w") as f:
-        f.write("apple_pie/1011328\n")
-        f.write("waffles/971843\n")
-
-    # Create dummy images in the correct locations
-    with open(os.path.join(fake_dataset_path, "images", "apple_pie", "1011328.jpg"), "w") as f:
+    # Create dummy image files
+    with open(os.path.join(fake_dataset_path, "class1", "1.jpg"), "w") as f:
         f.write("fake_image_data")
-    with open(os.path.join(fake_dataset_path, "images", "waffles", "971843.jpg"), "w") as f:
+    with open(os.path.join(fake_dataset_path, "class2", "2.jpg"), "w") as f:
         f.write("fake_image_data")
 
     # Mock kagglehub download
     with patch("kagglehub.dataset_download", return_value=fake_dataset_path):
         yield fake_dataset_path
-
-@patch("shutil.move")
-def test_load_data_structure(mock_shutil_move, mock_kagglehub):
-    """
-    Test that load_data creates the correct folders, calls shutil.move
-    for test files, and returns the loaders without error.
-    """
-    train_loader, valid_loader, train_subset_new = load_data()
-    
-    # Check that loaders are returned
-    assert train_loader is not None, "Train loader is None"
-    assert valid_loader is not None, "Validation loader is None"
-    assert train_subset_new is not None, "Train subset loader is None"
-
-    # Check that shutil.move was called for test images
-    assert mock_shutil_move.call_count > 0, "No files were moved to testset/"
-    
-    # The train_loader and valid_loader should be DataLoader objects
-    assert hasattr(train_loader, '__iter__'), "train_loader is not iterable"
-    assert hasattr(valid_loader, '__iter__'), "valid_loader is not iterable"
-    assert hasattr(train_subset_new, '__iter__'), "train_subset_new is not iterable"
 
 
 @patch("shutil.move")
@@ -67,7 +37,22 @@ def test_load_data_batch_shapes(mock_shutil_move, mock_kagglehub):
     Test that the shapes of the data batches returned by train_loader
     (and others) are as expected, e.g. (batch_size, 3, 224, 224).
     """
-    train_loader, valid_loader, _ = load_data()
+    data, transform, class_names = load_data()
+
+    # Convert the path-label pairs into the dataset
+    path_label = [(row['path'], row['label']) for _, row in data.iterrows()]
+    dataset = CustomDataset(path_label, transform)
+
+    # Split into training and validation
+    dataset_size = len(dataset)
+    train_size = int(0.6 * dataset_size)
+    val_size = dataset_size - train_size
+
+    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
+
+    # Create DataLoaders
+    train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+    val_loader = DataLoader(val_dataset, batch_size=2)
 
     # Get one batch from the training loader
     batch = next(iter(train_loader))
@@ -91,33 +76,38 @@ def test_load_data_subset(mock_shutil_move, mock_kagglehub):
     Test that the subset data loader (train_subset_new) has the correct length
     and is indeed smaller than the full training dataset.
     """
-    train_loader, _, train_subset_new = load_data()
+    data, transform, class_names = load_data()
 
-    # The full train_loader is a DataLoader of the entire dataset
-    full_train_size = len(train_loader.dataset)
+    # Convert the path-label pairs into the dataset
+    path_label = [(row['path'], row['label']) for _, row in data.iterrows()]
+    dataset = CustomDataset(path_label, transform)
 
-    # The subset is created with range(0, 2000) but let's confirm we have
-    # the length of the subset we expect. In the mock, we only have a few images,
-    # so the actual numbers might differ from your real use case.
-    subset_size = len(train_subset_new.dataset)  # This should be 2000 or fewer
-    assert subset_size <= 2000, "Subset should not exceed 2000 items"
+    # Split into training and validation
+    dataset_size = len(dataset)
+    train_size = int(0.6 * dataset_size)
+    val_size = dataset_size - train_size
 
-    # Also check that the subset is not empty (our mock data is quite small).
-    # Adjust this as needed for your real scenario.
-    assert subset_size > 0, "Subset should not be empty"
+    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
-    # Print for debugging (optional)
-    print(f"Full dataset size: {full_train_size}, Subset size: {subset_size}")
+    # Create DataLoaders
+    train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+
+    # Get subset (first 2 samples for test)
+    train_subset_new = torch.utils.data.Subset(train_dataset, range(2))
+
+    # Check subset length
+    subset_size = len(train_subset_new)
+    assert subset_size == 2, f"Expected subset size of 2, got {subset_size}"
+
+    # Also confirm that it's smaller than or equal to the original train size
+    assert subset_size <= train_size, "Subset size should not exceed train dataset size"
 
 
-def test_data_load_exceptions():
+@patch("os.path.exists", return_value=False)
+@patch("kagglehub.dataset_download", side_effect=Exception("Download failed"))
+def test_data_load_exceptions(mock_path_exists, mock_kagglehub_download):
     """
-    Example test for behavior if something goes wrong, e.g. Kaggle download fails.
-    This might require a custom exception handling in your code.
+    Test that the dataset load fails gracefully when the dataset is unavailable.
     """
-    # If kagglehub.dataset_download raises an exception, your code should handle it.
-    # We'll patch it to raise an exception and check if your code does something sensible.
-    with patch("kagglehub.dataset_download", side_effect=Exception("Download failed")):
-        with pytest.raises(Exception) as exc_info:
-            load_data()
-        assert "Download failed" in str(exc_info.value)
+    with pytest.raises(RuntimeError, match="Dataset download failed"):
+        load_data()
