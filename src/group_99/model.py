@@ -4,55 +4,54 @@ from torchvision.models import resnet50
 from torchvision import models
 
 
-class CustomResNet50(nn.Module):
-    def __init__(self, num_classes, weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=None, dropout_rate=0.5):
-        super(CustomResNet50, self).__init__()
-        # Load the pretrained ResNet50 model
-        self.resnet = resnet50(weights=weights)
-        
-        self.resnet.fc = nn.Linear(self.resnet.fc.in_features, 2048)
+import torch.nn as nn
+from torchvision.models import resnet18, ResNet18_Weights
 
-        # Add a custom fully connected layer (optional, depending on `x_dim`)
-        if x_dim:
-            self.resnet.fc1 = nn.Linear(2048, num_classes)
-        
-        # Add Dropout layer
-        self.dropout = nn.Dropout(dropout_rate)  # Dropout with a probability of 50%
+import torch.nn as nn
+from torchvision.models import resnet18, ResNet18_Weights
 
+class CustomResNet18(nn.Module):
+    def __init__(self, num_classes=101, pretrained=True, dropout_rate=0.5):
+        """
+        Custom ResNet-18 model with a dropout and final fully connected layer.
 
-    
+        Args:
+            num_classes (int): Number of output classes (default: 101).
+            pretrained (bool): Whether to load pretrained weights (default: True).
+            dropout_rate (float): Dropout probability (default: 0.5).
+        """
+        super(CustomResNet18, self).__init__()
+
+        # Load ResNet-18 with or without pretrained weights
+        weights = ResNet18_Weights.IMAGENET1K_V1 if pretrained else None
+        self.resnet = resnet18(weights=weights)
+
+        # Modify the fully connected layer (fc) to add Dropout and then a new Linear layer
+        self.resnet.fc = nn.Sequential(
+            nn.Dropout(dropout_rate),  # Apply dropout
+            nn.Linear(self.resnet.fc.in_features, num_classes)  # Output layer with specified number of classes
+        )
+
     def forward(self, x):
-            # Pass through ResNet50 layers (excluding the fully connected part)
-            x = self.resnet.conv1(x)
-            x = self.resnet.bn1(x)
-            x = self.resnet.relu(x)
-            x = self.resnet.maxpool(x)
-            
-            # Pass through the ResNet50's residual blocks
-            x = self.resnet.layer1(x)
-            x = self.resnet.layer2(x)
-            x = self.resnet.layer3(x)
-            x = self.resnet.layer4(x)
-            
-            # Global average pooling
-            x = self.resnet.avgpool(x)
-            
-            # Flatten the output from the ResNet50
-            x = torch.flatten(x, 1)  # Flatten all dimensions except batch size
-            
-            # Pass through custom fully connected layers with dropout
-            x = self.resnet.fc(x)
-            
-            # Apply dropout after the first fully connected layer (fc)
-            x = self.dropout(x)
-            
-            # If you added fc1, pass it through as well
-            if hasattr(self.resnet, 'fc1'):
-                x = self.resnet.fc1(x)
+        return self.resnet(x)  # Forward pass through ResNet-18 with modified fc layer
 
-            
-            return x
+
+
+class ResNet50Simple():
+    def __init__(self, num_classes, x_dim):
+        super(ResNet50Simple, self).__init__()
         
+        # Load the pretrained ResNet50 model
+        self.resnet = resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+        
+        # Modify the final fully connected layer
+        self.resnet.fc = nn.Sequential(
+            nn.Dropout(0.5),
+            nn.Linear(self.resnet.fc.in_features, 2048),
+            nn.ReLU(),
+            nn.Linear(2048, num_classes))
+
+
 
 class SimpleCNN(nn.Module):
     def __init__(self, num_classes, x_dim):
