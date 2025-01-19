@@ -16,7 +16,6 @@ from random import sample
 # @hydra.main(config_path="config", config_name="config.yaml", version_base="1.1")
 
 def load_data():
-
     # hparams = config['hyperparameters']   
     print("Starting download")
     # Download latest version
@@ -59,29 +58,29 @@ def load_data():
         print(f'\rMoved remaining {len(batch)} files', end='')
 
 
-    print("Limiting to 100 images per class in the training set.")
-    for cls_dir in os.listdir(os.path.join(path, 'images')):
-        cls_path = os.path.join(path, 'images', cls_dir)
-        if os.path.isdir(cls_path):
-            images = [os.path.join(cls_path, img) for img in os.listdir(cls_path) if img.endswith('.jpg')]
-            if len(images) > 100:
-                # Randomly sample 100 images
-                keep_images = sample(images, 100)
-                for img in images:
-                    if img not in keep_images:
-                        os.remove(img)
+    # print("Limiting to 100 images per class in the training set.")
+    # for cls_dir in os.listdir(os.path.join(path, 'images')):
+    #     cls_path = os.path.join(path, 'images', cls_dir)
+    #     if os.path.isdir(cls_path):
+    #         images = [os.path.join(cls_path, img) for img in os.listdir(cls_path) if img.endswith('.jpg')]
+    #         if len(images) > 100:
+    #             # Randomly sample 100 images
+    #             keep_images = sample(images, 100)
+    #             for img in images:
+    #                 if img not in keep_images:
+    #                     os.remove(img)
 
-    print("Limiting to 100 images per class in the test set.")
-    for cls_dir in os.listdir(os.path.join(path, 'testset')):
-        cls_path = os.path.join(path, 'testset', cls_dir)
-        if os.path.isdir(cls_path):
-            images = [os.path.join(cls_path, img) for img in os.listdir(cls_path) if img.endswith('.jpg')]
-            if len(images) > 100:
-                # Randomly sample 100 images
-                keep_images = sample(images, 100)
-                for img in images:
-                    if img not in keep_images:
-                        os.remove(img)
+    # print("Limiting to 100 images per class in the test set.")
+    # for cls_dir in os.listdir(os.path.join(path, 'testset')):
+    #     cls_path = os.path.join(path, 'testset', cls_dir)
+    #     if os.path.isdir(cls_path):
+    #         images = [os.path.join(cls_path, img) for img in os.listdir(cls_path) if img.endswith('.jpg')]
+    #         if len(images) > 100:
+    #             # Randomly sample 100 images
+    #             keep_images = sample(images, 100)
+    #             for img in images:
+    #                 if img not in keep_images:
+    #                     os.remove(img)
 
 
     train_transforms = torchvision.transforms.Compose([
@@ -103,7 +102,7 @@ def load_data():
     train_dataset = torchvision.datasets.ImageFolder(path + '/images/', transform=train_transforms)
     valid_dataset = torchvision.datasets.ImageFolder(path + '/testset/', transform=valid_transforms)
 
-    batch_size = 16
+    batch_size = 64
     train_loader = torch.utils.data.DataLoader(train_dataset,batch_size,shuffle=True,num_workers=4,pin_memory=True)
     valid_loader = torch.utils.data.DataLoader(valid_dataset,batch_size,shuffle=False,num_workers=4,pin_memory=True)
     # Get the first batch from the DataLoader
