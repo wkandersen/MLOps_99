@@ -2,158 +2,132 @@ import os
 import random
 import numpy as np
 import pandas as pd
-from tqdm import tqdm
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import random_split
-from torch.utils.data import DataLoader, Dataset, Subset
-from torch.utils.data import random_split, SubsetRandomSampler
-from torchvision import datasets, transforms, models 
+from torch.utils.data import DataLoader, Dataset, random_split
+from torchvision import transforms
 from torchvision.datasets import ImageFolder
-from torchvision.transforms import ToTensor
-from torchvision.utils import make_grid
-from pytorch_lightning import LightningModule
-from pytorch_lightning import Trainer
-import pytorch_lightning as pl
-import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from pytorch_lightning import LightningDataModule
 from PIL import Image
-import kagglehub
 
-
-# @hydra.main(config_path="config", config_name="config.yaml", version_base="1.1")
 
 def load_data():
-    # Define the home directory
+    """
+    Loads the sea animals dataset. Downloads it using kagglehub if not already present.
+    """
+    # Define the home directory and dataset path
     home_dir = os.path.expanduser("~")
-
-    # Define the dataset path based on the home directory
     dataset_path = os.path.join(home_dir, ".cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste")
 
-    # Check if the dataset already exists at the specified path
+    # Check if dataset exists, otherwise download it
     if os.path.exists(dataset_path):
-        print(f"Dataset found at {dataset_path}, using the existing dataset.")
-        path = dataset_path
+        print(f"Dataset found at {dataset_path}.")
     else:
-        print("Starting download")
-        path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
-        print(f"Dataset downloaded at {path}")
+        print("Dataset not found. Starting download...")
+        import kagglehub  # Imported here to avoid dependency issues
+        dataset_path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
+        print(f"Dataset downloaded to {dataset_path}.")
 
-    classes=[]
-    paths=[]
-    for dirname, _, filenames in os.walk(path):
+    # Gather file paths and labels
+    classes = []
+    paths = []
+    for dirname, _, filenames in os.walk(dataset_path):
         for filename in filenames:
-            if filename.endswith('.png') or filename.endswith('.jpg') :
-                classes+=[dirname.split('/')[-1]]
-                paths+=[(os.path.join(dirname, filename))]
-    print(len(paths))
+            if filename.endswith(('.png', '.jpg', '.jpeg')):
+                classes.append(dirname.split('/')[-1])
+                paths.append(os.path.join(dirname, filename))
 
+    print(f"Found {len(paths)} image files.")
 
-    N = list(range(len(classes)))
-    class_names=sorted(set(classes))
-    print(class_names)
-    normal_mapping=dict(zip(class_names,N)) 
-    reverse_mapping=dict(zip(N,class_names))       
+    # Create mappings for classes
+    class_names = sorted(set(classes))
+    class_to_idx = {cls_name: idx for idx, cls_name in enumerate(class_names)}
 
-    data=pd.DataFrame(columns=['path','class','label'])
-    data['path']=paths
-    data['class']=classes
-    data['label']=data['class'].map(normal_mapping)
-    m=len(data)
-    M=list(range(m))
-    random.shuffle(M)
-    data=data.iloc[M]
+    # Build DataFrame
+    data = pd.DataFrame({'path': paths, 'class': classes})
+    data['label'] = data['class'].map(class_to_idx)
 
+    # Shuffle the data
+    data = data.sample(frac=1).reset_index(drop=True)
 
-    transform=transforms.Compose([
-        transforms.RandomRotation(10),      # rotate +/- 10 degrees
-        transforms.RandomHorizontalFlip(),  # reverse 50% of images
-        transforms.Resize(224),             # resize shortest side to 224 pixels
-        transforms.CenterCrop(224),         # crop longest side to 224 pixels at center
+    # Define transformations
+    transform = transforms.Compose([
+        transforms.RandomRotation(10),
+        transforms.RandomHorizontalFlip(),
+        transforms.Resize(224),
+        transforms.CenterCrop(224),
         transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406],
-                             [0.229, 0.224, 0.225])
-                             ])
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
 
-    return data, transform, class_names
-
-
-def create_path_label_list(df):
-    path_label_list = []
-    for _, row in df.iterrows():
-        path = row['path']
-        label = row['label']
-        path_label_list.append((path, label))
-    return path_label_list
+    return data, transform, class_names, dataset_path
 
 
-class CustomDataset(torch.utils.data.Dataset):
-    def __init__(self, path_label, transform=None):
-        self.path_label = path_label
+class CustomDataset(Dataset):
+    def __init__(self, data, transform=None):
+        """
+        Custom dataset for handling image paths and labels.
+        """
+        self.data = data
         self.transform = transform
 
     def __len__(self):
-        return len(self.path_label)
+        return len(self.data)
 
     def __getitem__(self, idx):
-        path, label = self.path_label[idx]
-        img = Image.open(path).convert('RGB')
+        row = self.data.iloc[idx]
+        img = Image.open(row['path']).convert('RGB')
+        label = row['label']
 
-        if self.transform is not None:
+        if self.transform:
             img = self.transform(img)
 
         return img, label
-    
 
-class ImageDataset(pl.LightningDataModule):
-    def __init__(self, path_label, batch_size=32):
+
+class ImageDataModule(LightningDataModule):
+    def __init__(self, data, transform, batch_size=32):
         super().__init__()
-        self.path_label = path_label
+        self.data = data
+        self.transform = transform
         self.batch_size = batch_size
-        self.transform = transforms.Compose([
-            transforms.Resize(224),             # resize shortest side to 224 pixels
-            transforms.CenterCrop(224),         # crop longest side to 224 pixels at center            
-            transforms.ToTensor(),
-            transforms.Normalize([0.485, 0.456, 0.406],
-                                 [0.229, 0.224, 0.225])
-        ])
 
     def setup(self, stage=None):
-        dataset = CustomDataset(self.path_label, self.transform)
+        """
+        Splits the dataset into training and validation sets.
+        """
+        dataset = CustomDataset(self.data, self.transform)
         dataset_size = len(dataset)
-        train_size = int(0.6 * dataset_size) 
+        train_size = int(0.6 * dataset_size)
         val_size = dataset_size - train_size
-        print(train_size,val_size)
+        self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
 
-        self.train_dataset = torch.utils.data.Subset(dataset, range(train_size))
-        self.val_dataset = torch.utils.data.Subset(dataset, range(train_size, dataset_size))
+    def train_dataloader(self):
+        """
+        Returns DataLoader for training dataset.
+        """
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=15)
 
-    def __len__(self):
-        if self.train_dataset is not None:
-            return len(self.train_dataset)
-        elif self.val_dataset is not None:
-            return len(self.val_dataset)
-        else:
-            return 0        
-
-    def __getitem__(self, index):
-        if self.train_dataset is not None:
-            return self.train_dataset[index]
-        elif self.test_dataset is not None:
-            return self.test_dataset[index]
-        else:
-            raise IndexError("Index out of range. The dataset is empty.")
-
-    def train_dataset(self):
-        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True)
-
-    def val_dataset(self):
-        return DataLoader(self.val_dataset, batch_size=self.batch_size)
+    def val_dataloader(self):
+        """
+        Returns DataLoader for validation dataset.
+        """
+        return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=15)
 
 
+# Example Usage
+if __name__ == "__main__":
+    # Load the dataset and transform
+    data, transform, class_names, dataset_path = load_data()
 
+    # Create the data module
+    data_module = ImageDataModule(data, transform, batch_size=32)
 
-    
-# if __name__ == "__main__":
+    # Set up the data loaders
+    data_module.setup()
+    train_loader = data_module.train_dataloader()
+    val_loader = data_module.val_dataloader()
+
+    # Print some statistics
+    print(f"Number of training samples: {len(data_module.train_dataset)}")
+    print(f"Number of validation samples: {len(data_module.val_dataset)}")
+

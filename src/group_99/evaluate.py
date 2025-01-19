@@ -1,81 +1,74 @@
-# Validation
 import torch
-from train import train
-from model import CustomResNet50, SimpleCNN
-from data import load_data
-from torch.optim import Adam
-from torch.nn import CrossEntropyLoss
-from tqdm import tqdm
-from torch.utils.tensorboard import SummaryWriter
-from torchvision.models.resnet import resnet50
-writer = SummaryWriter() # For Tensorboard
+from sklearn.metrics import classification_report, confusion_matrix
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+from data import load_data, ImageDataModule
+from model import ConvolutionalNetwork
+import pytorch_lightning as pl
 import hydra
-from torchvision import models
+from omegaconf import DictConfig
+from pytorch_lightning.callbacks import ModelCheckpoint
 
-model_name = 'models/model.pth'
-cuda = False
+# Define checkpoint path
+checkpoint_path = "models/bestmodel.ckpt"
 
-@hydra.main(config_path="config", config_name="config.yaml", version_base="1.3")
+# Load data and initialize the datamodule
+data, transform, class_names, path = load_data()
+datamodule = ImageDataModule(data, transform, batch_size=128)
 
-def evaluate(config):
-    model_checkpoint = 'models/model.pth'
-    writer = SummaryWriter() # For Tensorboard
-    early_stop_count=0
-    ES_patience=5
-    best = 0.0
+# Load the model from checkpoint
+model = ConvolutionalNetwork.load_from_checkpoint(checkpoint_path, class_names=class_names, lr=0.001)
 
-    print("Evaluating like my life depended on it")
-    hparams = config['hyperparameters']
-    model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
-    model.load_state_dict(torch.load(model_checkpoint,weights_only=True))
-    model.eval()
-    #Initialize 
+def evaluate_model(model, dataloader, class_names, device='cuda' if torch.cuda.is_available() else 'cpu'):
+    """
+    Evaluate the model on a given dataloader and print performance metrics.
     
-    criterion = CrossEntropyLoss()
-    optimizer = Adam(model.parameters(), hparams["lr"])
+    Args:
+        model: Trained PyTorch model.
+        dataloader: DataLoader containing evaluation data.
+        class_names: List of class names for the dataset.
+        device: Device to run the evaluation on ('cuda' or 'cpu').
+    """
+    model.to(device)
+    model.eval()  # Set the model to evaluation mode
 
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min',factor=0.1,patience=1,verbose=True)
+    all_preds = []
+    all_labels = []
 
-    for epoch in range(hparams['epochs']):
-        _, valid_loader, _ = load_data()
-        with torch.no_grad():
-            correct = 0
-            val_loss = 0.0
-            vbar = tqdm(valid_loader, desc = 'Validation', position=0, leave=True)
-            for i,(inp,lbl) in enumerate(vbar):
-                if cuda:
-                    inp,lbl = inp.cuda(),lbl.cuda()
-                out = model(inp)
-                val_loss += criterion(out,lbl)
-                out = out.argmax(dim=1)
-                correct += (out == lbl).sum().item()
-            val_acc = 100.0*correct/len(valid_loader.dataset)
-            val_loss /= (len(valid_loader.dataset)/hparams['batch_size'])
-        print(f'\nEpoch: {epoch+1}/{hparams["epochs"]}')
-        print(f'Validation loss: {val_loss}, Validation Accuracy: {val_acc}\n')
+    with torch.no_grad():  # Disable gradient computation for evaluation
+        for images, labels in dataloader:
+            images, labels = images.to(device), labels.to(device)
+            
+            # Forward pass
+            outputs = model(images)
+            _, preds = torch.max(outputs, 1)  # Get the predicted class
+            
+            all_preds.extend(preds.cpu().numpy())
+            all_labels.extend(labels.cpu().numpy())
 
-        scheduler.step(val_loss)
+    # Generate classification report
+    print("\nClassification Report:")
+    print(classification_report(all_labels, all_preds, target_names=class_names))
 
-        # write to tensorboard
-        writer.add_scalar("Loss/val", val_loss, epoch)
-        writer.add_scalar("Accuracy/val", val_acc, epoch)
+    # Generate confusion matrix
+    cm = confusion_matrix(all_labels, all_preds)
+    plot_confusion_matrix(cm, class_names)
 
-        if val_acc>best:
-            best=val_acc
-            torch.save(model,model_name)
-            early_stop_count=0
-            print('Accuracy Improved, model saved.\n')
-        else:
-            early_stop_count+=1
+def plot_confusion_matrix(cm, class_names):
+    """
+    Plot the confusion matrix using matplotlib and seaborn.
 
-        if early_stop_count==ES_patience:
-            print('Early Stopping Initiated...')
-            print(f'Best Accuracy achieved: {best:.2f}% at epoch:{epoch-ES_patience}')
-            print(f'Model saved as {model_name}')
-            break
+    Args:
+        cm: Confusion matrix as a NumPy array.
+        class_names: List of class names for the dataset.
+    """
+    plt.figure(figsize=(10, 8))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=class_names, yticklabels=class_names)
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    plt.show()
 
-    
-    writer.flush()
-
-if __name__ == "__main__":
-    evaluate()
+# Evaluate the model using the validation dataloader
+evaluate_model(model, datamodule.val_dataloader(), class_names)

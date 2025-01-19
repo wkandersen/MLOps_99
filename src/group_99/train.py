@@ -1,69 +1,57 @@
-from model import CustomResNet18, CNNModel
-from data import load_data
+from data import load_data, ImageDataModule
+from model import ConvolutionalNetwork
 import torch
-from tqdm import tqdm
-from torch.optim import Adam
-from torch.nn import CrossEntropyLoss
+import pytorch_lightning as pl
 import hydra
-from torchvision.models import resnet18
-from torchvision import models
+from omegaconf import DictConfig
+from pytorch_lightning.callbacks import ModelCheckpoint
 
 
-# loading
-cuda = torch.cuda.is_available()
+
 @hydra.main(config_path="config", config_name="config.yaml", version_base="1.3")
 
-def train(config):
-    hparams = config['hyperparameters']
-    # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    # model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
-    model = CNNModel(num_classes=hparams['num_classes'], x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
-
-    
-    optimizer = Adam(model.parameters(), hparams["lr"])
-    criterion = CrossEntropyLoss()
-
-    if cuda:
-        model = model.cuda()
-        criterion = criterion.cuda()
-
-    train_loader, _, _ = load_data()
-
-    for epoch in range(hparams['epochs']):
-
-        # Training loop
-        model.train()
-        correct = 0
-        train_loss = 0.0
-        tbar = tqdm(train_loader, desc = 'Training', position=0, leave=True)
-        for i,(inp,lbl) in enumerate(tbar):
-            optimizer.zero_grad()
+def train(config: DictConfig):
+    # Check if CUDA is available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"Using device: {device}")
+    hparams = config.hyperparameters
+    # Hyperparameters from config
 
 
-            if cuda:
-                inp,lbl = inp.cuda(),lbl.cuda()
+    # Load the data
+    data, transform, class_names, path = load_data()
 
-                
-            out = model(inp)
-            loss = criterion(out,lbl)
-            train_loss += loss
-            out = out.argmax(dim=1)
-            correct += (out == lbl).sum().item()
-            loss.backward()
-            optimizer.step()
-            tbar.set_description(f"Epoch: {epoch+1}, loss: {loss.item():.5f}, acc: {100.0*correct/((i+1)*train_loader.batch_size):.4f}%")
-        train_acc = 100.0*correct/len(train_loader.dataset)
-        train_loss /= (len(train_loader.dataset)/hparams['batch_size'])
+    # Initialize the data module
+    datamodule = ImageDataModule(data, transform, batch_size=hparams['batch_size'])
 
-        print("Training complete")
-        torch.save(model.state_dict(), "models/model.pth")
-        # fig, axs = plt.subplots(1, 2, figsize=(15, 5))
-        # axs[0].plot(statistics["train_loss"])
-        # axs[0].set_title("Train loss")
-        # axs[1].plot(statistics["train_accuracy"])
-        # axs[1].set_title("Train accuracy")
-        # fig.savefig("reports/figures/training_statistics.png")
+    # Define the model
+    model = ConvolutionalNetwork(class_names=hparams['num_classes'], lr=hparams['lr'])
+
+    # Set up the ModelCheckpoint callback
+    checkpoint_callback = ModelCheckpoint(
+        monitor="val_loss",                # Metric to monitor (e.g., validation loss)
+        dirpath="models/",           # Directory to save checkpoints
+        filename="best-model-{epoch:02d}-{val_loss:.2f}",  # Filename format
+        save_top_k=1,                      # Save only the best model
+        mode="min",                        # "min" because we want the lowest loss
+        verbose=True                       # Print information about checkpointing
+    )
+
+    # Set up the PyTorch Lightning trainer
+    trainer = pl.Trainer(
+        max_epochs=hparams['epochs'],
+        callbacks=[checkpoint_callback],  # Add the ModelCheckpoint callback
+    )
+    print(f"Training model for {hparams['epochs']} epochs...")
+    # Train the model   
+    trainer.fit(model, train_dataloaders=datamodule)
+
+    # Test the model using the validation set
+    trainer.test(model, dataloaders=datamodule.val_dataloader())
+
+    # Print the path of the best model
+    print(f"Best model saved at: {checkpoint_callback.best_model_path}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     train()
