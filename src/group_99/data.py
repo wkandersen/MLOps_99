@@ -101,7 +101,7 @@ def load_data():
     train_dataset = torchvision.datasets.ImageFolder(path + '/images/', transform=train_transforms)
     valid_dataset = torchvision.datasets.ImageFolder(path + '/testset/', transform=valid_transforms)
 
-    batch_size = 64
+    batch_size = 16
     train_loader = torch.utils.data.DataLoader(train_dataset,batch_size,shuffle=True,num_workers=4,pin_memory=True)
     valid_loader = torch.utils.data.DataLoader(valid_dataset,batch_size,shuffle=False,num_workers=4,pin_memory=True)
     # Get the first batch from the DataLoader

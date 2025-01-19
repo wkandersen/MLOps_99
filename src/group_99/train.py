@@ -1,4 +1,4 @@
-from model import CustomResNet18
+from model import CustomResNet18, CNNModel
 from data import load_data
 import torch
 from tqdm import tqdm
@@ -17,7 +17,7 @@ def train(config):
     hparams = config['hyperparameters']
     # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
     # model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
-    model = CustomResNet18(num_classes=hparams['num_classes'], pretrained=True, dropout_rate=hparams["dropout_rate"])
+    model = CNNModel(num_classes=hparams['num_classes'], x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
 
     
     optimizer = Adam(model.parameters(), hparams["lr"])

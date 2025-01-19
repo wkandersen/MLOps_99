@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 from torchvision.models import resnet50
 from torchvision import models
+import torch.nn.functional as F
+
 
 
 import torch.nn as nn
@@ -53,35 +55,68 @@ class ResNet50Simple():
 
 
 
-class SimpleCNN(nn.Module):
-    def __init__(self, num_classes, x_dim):
-        super(SimpleCNN, self).__init__()
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+import torch
+import torch.nn as nn
+import torch.optim as optim
+import torchvision
+import torch.nn.functional as F
+
+import torch
+import torch.nn as nn
+import torch.nn.functional as F
+
+class CNNModel(nn.Module):
+    def __init__(self, num_classes, x_dim, dropout_rate):
+        super(CNNModel, self).__init__()
         
-        # Convolutional layers
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3, padding=1)
+        # x_dim represents flattened input size: channels * height * width
+        # We can infer the input dimensions based on x_dim if needed.
+        self.x_dim = x_dim
+        self.dropout_rate = dropout_rate
+        self.num_classes = num_classes
         
-        # Fully connected layers
-        self.fc1 = nn.Linear(x_dim, 128)  # Assuming input image size is 32x32
-        self.fc2 = nn.Linear(128, num_classes)
-        
-        # Max Pooling Layer
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        # Define the convolutional layers with increasing depth
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=3, padding=1)  # Input: 3 channels (RGB), Output: 64 channels
+        self.conv2 = nn.Conv2d(64, 128, kernel_size=3, padding=1)  # Input: 64 channels, Output: 128 channels
+        self.conv3 = nn.Conv2d(128, 256, kernel_size=3, padding=1)  # Input: 128 channels, Output: 256 channels
+
+        # Max-pooling layer
+        self.pool = nn.MaxPool2d(2, 2)  # Pooling with 2x2 kernel
+
+        # Calculate the output size after convolutional and pooling layers
+        # We assume the input size is square and that the input dimensions are in x_dim
+        # The size after 3 max-pooling layers (each halving the dimension) will be:
+        self.fc_input_dim = x_dim
+
+        # Fully connected layers after the convolutions
+        self.fc1 = nn.Linear(self.fc_input_dim, 1024)  # Flattened image size
+        self.fc2 = nn.Linear(1024, num_classes)  # Final layer for classification
+
+        # Dropout layer for regularization
+        self.dropout = nn.Dropout(dropout_rate)
 
     def forward(self, x):
-        # Apply convolutional layers with ReLU activations
-        x = self.pool(torch.relu(self.conv1(x)))
-        x = self.pool(torch.relu(self.conv2(x)))
+        # Convolution + ReLU + Pooling
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = self.pool(F.relu(self.conv3(x)))
+
+        # Flatten the output for the fully connected layer
+        x = x.view(x.size(0), -1)
+
+        # Fully connected layers with dropout
+        x = F.relu(self.fc1(x))
+        x = self.dropout(x)  # Apply dropout
         
-        # Flatten the tensor
-        x = torch.flatten(x, 1)
-        
-        # Pass through fully connected layers
-        x = torch.relu(self.fc(x))
-        x = self.fc2(x)  # Final output layer (no activation here for classification)
-        
+        # Final output layer (logits)
+        x = self.fc2(x)
         return x
-
-
-
 
