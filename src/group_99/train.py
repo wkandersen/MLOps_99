@@ -1,11 +1,11 @@
-from model import CustomResNet50, SimpleCNN
+from model import CustomResNet18
 from data import load_data
 import torch
 from tqdm import tqdm
 from torch.optim import Adam
 from torch.nn import CrossEntropyLoss
 import hydra
-from torchvision.models import resnet50
+from torchvision.models import resnet18
 from torchvision import models
 
 
@@ -16,7 +16,10 @@ cuda = torch.cuda.is_available()
 def train(config):
     hparams = config['hyperparameters']
     # model = SimpleCNN(num_classes=hparams['num_classes'], x_dim = hparams['x_dim'])
-    model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
+    # model = CustomResNet50(num_classes=hparams['num_classes'], weights=models.ResNet50_Weights.IMAGENET1K_V1, x_dim=hparams['x_dim'], dropout_rate=hparams["dropout_rate"])
+    model = CustomResNet18(num_classes=hparams['num_classes'], pretrained=True, dropout_rate=hparams["dropout_rate"])
+
+    
     optimizer = Adam(model.parameters(), hparams["lr"])
     criterion = CrossEntropyLoss()
 
@@ -24,18 +27,9 @@ def train(config):
         model = model.cuda()
         criterion = criterion.cuda()
 
-    train_loader, valid_loader, train_subset_new = load_data()
+    train_loader, _, _ = load_data()
 
     for epoch in range(hparams['epochs']):
-        # Training
-
-        # Model, optimizer, criterion initialization
-        # model = CustomResNet50(num_classes=hparams['num_classes'], pretrained=True)
-
-
-        # Load data
-
-        #create subset of dataa
 
         # Training loop
         model.train()
@@ -61,8 +55,8 @@ def train(config):
         train_acc = 100.0*correct/len(train_loader.dataset)
         train_loss /= (len(train_loader.dataset)/hparams['batch_size'])
 
-        print("Training complete")
-        torch.save(model.state_dict(), "models/model.pth")
+        # print("Training complete")
+        # torch.save(model.state_dict(), "models/model.pth")
         # fig, axs = plt.subplots(1, 2, figsize=(15, 5))
         # axs[0].plot(statistics["train_loss"])
         # axs[0].set_title("Train loss")
