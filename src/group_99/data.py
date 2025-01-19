@@ -66,7 +66,6 @@ def load_data():
             shutil.move(src, dst)
         print(f'/rMoved remaining {len(batch)} files', end='')
 
-
     # print("Limiting to 100 images per class in the training set.")
     # for cls_dir in os.listdir(os.path.join(path, 'images')):
     #     cls_path = os.path.join(path, 'images', cls_dir)
