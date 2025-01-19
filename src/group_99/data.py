@@ -1,3 +1,4 @@
+import os
 import numpy as np # linear algebra
 import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import matplotlib.pyplot as plt
@@ -12,16 +13,24 @@ import hydra
 import kagglehub
 from random import sample
 
-
 # @hydra.main(config_path="config", config_name="config.yaml", version_base="1.1")
 
 def load_data():
-    # hparams = config['hyperparameters']   
-    print("Starting download")
-    # Download latest version
-    path = kagglehub.dataset_download("kmader/food41")
-    print("Downloaded to", path)
-    import os
+    # Define the home directory
+    home_dir = os.path.expanduser("~")
+
+    # Define the dataset path based on the home directory
+    dataset_path = os.path.join(home_dir, ".cache/kagglehub/datasets/kmader/food41/versions/5")
+
+    # Check if the dataset already exists at the specified path
+    if os.path.exists(dataset_path):
+        print(f"Dataset found at {dataset_path}, using the existing dataset.")
+        path = dataset_path
+    else:
+        print("Starting download")
+        path = kagglehub.dataset_download("kmader/food41")
+
+    # print("Downloaded to", path)
     for dirname, _, filenames in os.walk('/kaggle/input'):
         for filename in filenames:
             print(os.path.join(dirname, filename))
@@ -55,7 +64,7 @@ def load_data():
     if batch:
         for src, dst in batch:
             shutil.move(src, dst)
-        print(f'\rMoved remaining {len(batch)} files', end='')
+        print(f'/rMoved remaining {len(batch)} files', end='')
 
 
     # print("Limiting to 100 images per class in the training set.")
