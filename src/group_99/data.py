@@ -22,10 +22,12 @@ def load_data():
     if os.path.exists(dataset_path):
         print(f"Dataset found at {dataset_path}.")
     else:
-        print("Dataset not found. Starting download...")
-        import kagglehub  # Imported here to avoid dependency issues
-        dataset_path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
-        print(f"Dataset downloaded to {dataset_path}.")
+        print("Starting download")
+        try:
+            path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
+            print(f"Dataset downloaded at {path}")
+        except Exception as e:
+            raise RuntimeError("Dataset download failed") from e
 
     # Gather file paths and labels
     classes = []
@@ -114,6 +116,7 @@ class ImageDataModule(LightningDataModule):
         return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=15)
 
 
+<<<<<<< HEAD
 # Example Usage
 if __name__ == "__main__":
     # Load the dataset and transform
@@ -131,3 +134,7 @@ if __name__ == "__main__":
     print(f"Number of training samples: {len(data_module.train_dataset)}")
     print(f"Number of validation samples: {len(data_module.val_dataset)}")
 
+=======
+if __name__ == "__main__":
+    load_data()
+>>>>>>> ab9cf5df2fc84fa4aacf65b7e056d6b93292b7e6
