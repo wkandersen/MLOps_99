@@ -13,7 +13,20 @@ import kagglehub
 
 
 # @hydra.main(config_path="config", config_name="config.yaml", version_base="1.1")
+from collections import defaultdict
 
+def filter_dataset(dataset, max_per_category):
+    category_counts = defaultdict(int)
+    filtered_indices = []
+
+    for idx, (_, label) in enumerate(dataset):
+        if category_counts[label] < max_per_category:
+            filtered_indices.append(idx)
+            category_counts[label] += 1
+        if len(filtered_indices) == max_per_category * len(dataset.classes):
+            break
+
+    return torch.utils.data.Subset(dataset, filtered_indices)
 
 def load_data():
 
@@ -78,12 +91,19 @@ def load_data():
     train_dataset = torchvision.datasets.ImageFolder(path + '/images/', transform=train_transforms)
     valid_dataset = torchvision.datasets.ImageFolder(path + '/testset/', transform=valid_transforms)
 
-    train_subset = torch.utils.data.Subset(train_dataset, range(0, 2000))
-    train_subset_new = torch.utils.data.DataLoader(train_subset, batch_size=128, shuffle=True, num_workers=4)
+    # train_subset = torch.utils.data.Subset(train_dataset, range(0, 2000))
+    # train_subset_new = torch.utils.data.DataLoader(train_subset, batch_size=128, shuffle=True, num_workers=4)
 
-    batch_size = 256
-    train_loader = torch.utils.data.DataLoader(train_dataset,batch_size,shuffle=True,num_workers=4,pin_memory=True)
-    valid_loader = torch.utils.data.DataLoader(valid_dataset,batch_size,shuffle=False,num_workers=4,pin_memory=True)
+    # batch_size = 256
+    # train_loader = torch.utils.data.DataLoader(train_dataset,batch_size,shuffle=True,num_workers=4,pin_memory=True)
+    # valid_loader = torch.utils.data.DataLoader(valid_dataset,batch_size,shuffle=False,num_workers=4,pin_memory=True)
+
+    # Limit to 100 samples per category
+    train_dataset_limited = filter_dataset(train_dataset, max_per_category=100)
+    valid_dataset_limited = filter_dataset(valid_dataset, max_per_category=100)
+
+    train_loader = torch.utils.data.DataLoader(train_dataset_limited, batch_size=128, shuffle=True, num_workers=4)
+    valid_loader = torch.utils.data.DataLoader(valid_dataset_limited, batch_size=128, shuffle=False, num_workers=4)
     # Get the first batch from the DataLoader
     inputs, labels = next(iter(train_loader))
 
