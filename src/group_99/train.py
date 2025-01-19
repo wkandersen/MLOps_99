@@ -55,8 +55,8 @@ def train(config):
         train_acc = 100.0*correct/len(train_loader.dataset)
         train_loss /= (len(train_loader.dataset)/hparams['batch_size'])
 
-        # print("Training complete")
-        # torch.save(model.state_dict(), "models/model.pth")
+        print("Training complete")
+        torch.save(model.state_dict(), "models/model.pth")
         # fig, axs = plt.subplots(1, 2, figsize=(15, 5))
         # axs[0].plot(statistics["train_loss"])
         # axs[0].set_title("Train loss")
