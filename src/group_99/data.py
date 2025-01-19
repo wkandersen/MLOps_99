@@ -1,17 +1,27 @@
 import os
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
-import matplotlib.pyplot as plt
+import random
+import numpy as np
+import pandas as pd
 from tqdm import tqdm
-from PIL import Image
 import torch
-import torchvision
-from torch.utils.tensorboard import SummaryWriter
-from torchvision.models.resnet import resnet50
-import shutil
-import hydra
+import torch.nn as nn
+import torch.nn.functional as F
+from torch.utils.data import random_split
+from torch.utils.data import DataLoader, Dataset, Subset
+from torch.utils.data import random_split, SubsetRandomSampler
+from torchvision import datasets, transforms, models 
+from torchvision.datasets import ImageFolder
+from torchvision.transforms import ToTensor
+from torchvision.utils import make_grid
+from pytorch_lightning import LightningModule
+from pytorch_lightning import Trainer
+import pytorch_lightning as pl
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report
+from PIL import Image
 import kagglehub
-from random import sample
+
 
 # @hydra.main(config_path="config", config_name="config.yaml", version_base="1.1")
 
@@ -20,7 +30,7 @@ def load_data():
     home_dir = os.path.expanduser("~")
 
     # Define the dataset path based on the home directory
-    dataset_path = os.path.join(home_dir, ".cache/kagglehub/datasets/kmader/food41/versions/5")
+    dataset_path = os.path.join(home_dir, ".cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste")
 
     # Check if the dataset already exists at the specified path
     if os.path.exists(dataset_path):
@@ -28,110 +38,122 @@ def load_data():
         path = dataset_path
     else:
         print("Starting download")
-        path = kagglehub.dataset_download("kmader/food41")
+        path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
+        print(f"Dataset downloaded at {path}")
 
-    # print("Downloaded to", path)
-    for dirname, _, filenames in os.walk('/kaggle/input'):
+    classes=[]
+    paths=[]
+    for dirname, _, filenames in os.walk(path):
         for filename in filenames:
-            print(os.path.join(dirname, filename))
-
-    fl = open(path + '/meta/meta/classes.txt')
-    cls = fl.readline().strip()
-
-    while(cls):
-        os.makedirs(path + f'/testset/{cls}', exist_ok=True)
-        cls = fl.readline().strip()
-    # Moving test files to testset/, train files will be left.
-    testfile = open(path + '/meta/meta/test.txt')
-    img = testfile.readline().strip()
-    batch_size = 100
-    batch = []
-
-    while(img):
-        cls = img.split('/')[0]
-        path1 = os.path.join(path, f'images/', (img + '.jpg'))
-        path2 = os.path.join(path, f"testset/", (img + '.jpg'))
-        if (os.path.exists(path1)):
-            batch.append((path1, path2))
-            if len(batch) >= batch_size:
-                for src, dst in batch:
-                    shutil.move(src, dst)
-                batch = []
-                print(f'Moved {len(batch)} files')
-        img = testfile.readline().strip()
-
-    # Move remaining files in the batch
-    if batch:
-        for src, dst in batch:
-            shutil.move(src, dst)
-        print(f'/rMoved remaining {len(batch)} files', end='')
-
-    # print("Limiting to 100 images per class in the training set.")
-    # for cls_dir in os.listdir(os.path.join(path, 'images')):
-    #     cls_path = os.path.join(path, 'images', cls_dir)
-    #     if os.path.isdir(cls_path):
-    #         images = [os.path.join(cls_path, img) for img in os.listdir(cls_path) if img.endswith('.jpg')]
-    #         if len(images) > 100:
-    #             # Randomly sample 100 images
-    #             keep_images = sample(images, 100)
-    #             for img in images:
-    #                 if img not in keep_images:
-    #                     os.remove(img)
-
-    # print("Limiting to 100 images per class in the test set.")
-    # for cls_dir in os.listdir(os.path.join(path, 'testset')):
-    #     cls_path = os.path.join(path, 'testset', cls_dir)
-    #     if os.path.isdir(cls_path):
-    #         images = [os.path.join(cls_path, img) for img in os.listdir(cls_path) if img.endswith('.jpg')]
-    #         if len(images) > 100:
-    #             # Randomly sample 100 images
-    #             keep_images = sample(images, 100)
-    #             for img in images:
-    #                 if img not in keep_images:
-    #                     os.remove(img)
+            if filename.endswith('.png') or filename.endswith('.jpg') :
+                classes+=[dirname.split('/')[-1]]
+                paths+=[(os.path.join(dirname, filename))]
+    print(len(paths))
 
 
-    train_transforms = torchvision.transforms.Compose([
-            torchvision.transforms.ColorJitter(brightness=0.1,contrast=0.1,saturation=0.1),
-            torchvision.transforms.RandomAffine(15),
-            torchvision.transforms.RandomHorizontalFlip(),
-            torchvision.transforms.RandomRotation(15),
-            torchvision.transforms.Resize((224,224)),
-            torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
-    ])
-    valid_transforms = torchvision.transforms.Compose([
-            torchvision.transforms.Resize((224,224)),
-            torchvision.transforms.ToTensor(),
-            torchvision.transforms.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
-    ])
+    N = list(range(len(classes)))
+    class_names=sorted(set(classes))
+    print(class_names)
+    normal_mapping=dict(zip(class_names,N)) 
+    reverse_mapping=dict(zip(N,class_names))       
+
+    data=pd.DataFrame(columns=['path','class','label'])
+    data['path']=paths
+    data['class']=classes
+    data['label']=data['class'].map(normal_mapping)
+    m=len(data)
+    M=list(range(m))
+    random.shuffle(M)
+    data=data.iloc[M]
 
 
-    train_dataset = torchvision.datasets.ImageFolder(path + '/images/', transform=train_transforms)
-    valid_dataset = torchvision.datasets.ImageFolder(path + '/testset/', transform=valid_transforms)
+    transform=transforms.Compose([
+        transforms.RandomRotation(10),      # rotate +/- 10 degrees
+        transforms.RandomHorizontalFlip(),  # reverse 50% of images
+        transforms.Resize(224),             # resize shortest side to 224 pixels
+        transforms.CenterCrop(224),         # crop longest side to 224 pixels at center
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406],
+                             [0.229, 0.224, 0.225])
+                             ])
 
-    batch_size = 16
-    train_loader = torch.utils.data.DataLoader(train_dataset,batch_size,shuffle=True,num_workers=4,pin_memory=True)
-    valid_loader = torch.utils.data.DataLoader(valid_dataset,batch_size,shuffle=False,num_workers=4,pin_memory=True)
-    # Get the first batch from the DataLoader
-    inputs, _ = next(iter(train_loader))
+    return data, transform, class_names
 
 
-    return train_loader, valid_loader, inputs
+def create_path_label_list(df):
+    path_label_list = []
+    for _, row in df.iterrows():
+        path = row['path']
+        label = row['label']
+        path_label_list.append((path, label))
+    return path_label_list
+
+
+class CustomDataset(torch.utils.data.Dataset):
+    def __init__(self, path_label, transform=None):
+        self.path_label = path_label
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.path_label)
+
+    def __getitem__(self, idx):
+        path, label = self.path_label[idx]
+        img = Image.open(path).convert('RGB')
+
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img, label
     
-if __name__ == "__main__":
-    train_loader, _ , inputs = load_data()
-    # Get the first batch from the DataLoader
-    inputs, _ = next(iter(train_loader))
 
-    # Print the shape of the inputs (i.e., the image tensor)
-    print("Input size (batch_size, channels, height, width):", inputs.shape)
+class ImageDataset(pl.LightningDataModule):
+    def __init__(self, path_label, batch_size=32):
+        super().__init__()
+        self.path_label = path_label
+        self.batch_size = batch_size
+        self.transform = transforms.Compose([
+            transforms.Resize(224),             # resize shortest side to 224 pixels
+            transforms.CenterCrop(224),         # crop longest side to 224 pixels at center            
+            transforms.ToTensor(),
+            transforms.Normalize([0.485, 0.456, 0.406],
+                                 [0.229, 0.224, 0.225])
+        ])
 
-    batch_size, channels, height, width = inputs.shape
-    flattened_inputs = inputs.view(batch_size, -1)  # Flatten everything except the batch dimension
+    def setup(self, stage=None):
+        dataset = CustomDataset(self.path_label, self.transform)
+        dataset_size = len(dataset)
+        train_size = int(0.6 * dataset_size) 
+        val_size = dataset_size - train_size
+        print(train_size,val_size)
 
-    # Print the shape of the flattened input
-    print("Flattened input shape:", flattened_inputs.shape)
-    print("Channels:", channels)
-    print("Height:", height)
-    print("Width:", width)
+        self.train_dataset = torch.utils.data.Subset(dataset, range(train_size))
+        self.val_dataset = torch.utils.data.Subset(dataset, range(train_size, dataset_size))
+
+    def __len__(self):
+        if self.train_dataset is not None:
+            return len(self.train_dataset)
+        elif self.val_dataset is not None:
+            return len(self.val_dataset)
+        else:
+            return 0        
+
+    def __getitem__(self, index):
+        if self.train_dataset is not None:
+            return self.train_dataset[index]
+        elif self.test_dataset is not None:
+            return self.test_dataset[index]
+        else:
+            raise IndexError("Index out of range. The dataset is empty.")
+
+    def train_dataset(self):
+        return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True)
+
+    def val_dataset(self):
+        return DataLoader(self.val_dataset, batch_size=self.batch_size)
+
+
+
+
+    
+# if __name__ == "__main__":
