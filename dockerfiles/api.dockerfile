@@ -1,17 +1,8 @@
-# Base image
 FROM python:3.11-slim
+WORKDIR /code
+COPY ./requirements.txt /code/requirements.txt
 
-RUN apt update && \
-    apt install --no-install-recommends -y build-essential gcc && \
-    apt clean && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+COPY ./app /code/app
 
-WORKDIR /
-
-COPY requirements.txt .
-COPY pyproject.toml .
-COPY src/group_99/ .
-
-RUN pip install -r requirements.txt --no-cache-dir
-RUN pip install . --no-deps --no-cache-dir
-
-ENTRYPOINT ["uvicorn", "src/group_99/api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
