@@ -88,3 +88,10 @@ def test_data_load_exceptions(mock_path_exists, mock_kagglehub_download):
     """
     with pytest.raises(RuntimeError, match="Dataset download failed"):
         load_data()
+
+
+# Run the tests 1 and 2
+if __name__ == "__main__":
+    pytest.main(["-v", __file__])
+    
+
