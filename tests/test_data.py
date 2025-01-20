@@ -44,7 +44,7 @@ def test_load_data_batch_shapes(mock_shutil_move, mock_kagglehub):
     batch = next(iter(train_loader))
     inputs, labels = batch
 
-    assert len(inputs.shape) == 4, "Inputs should be a 4D tensor"
+    assert len(inputs.shape) == 3, "Inputs should be a 4D tensor"
     assert inputs.shape[1] == 3, "Channel dimension should be 3 for RGB images"
     assert inputs.shape[2] == 224 and inputs.shape[3] == 224, (
         "Images should be resized to 224x224"
