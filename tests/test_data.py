@@ -13,7 +13,7 @@ def mock_kagglehub(tmp_path):
     """
     Mock the kagglehub.dataset_download function and create a fake directory structure.
     """
-    fake_dataset_path = "${HOME}/.cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste"
+    fake_dataset_path = "${HOME}/.cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste/versions/5"
     os.makedirs(os.path.join(fake_dataset_path, "class1"), exist_ok=True)
     os.makedirs(os.path.join(fake_dataset_path, "class2"), exist_ok=True)
 
