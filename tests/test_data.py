@@ -30,27 +30,32 @@ def test_load_data_batch_shapes(mock_shutil_move, mock_kagglehub):
     Test that the shapes of the data batches returned by train_loader
     (and others) are as expected, e.g. (batch_size, 3, 224, 224).
     """
+    # Load the data, and ensure the mock_kagglehub fixture is used to provide the dataset path
     data, transform, class_names, dataset_path = load_data()
 
+    # Create the CustomDataset instance
     dataset = CustomDataset(data, transform)
 
+    # Split the dataset into train and validation sets
     dataset_size = len(dataset)
     train_size = int(0.6 * dataset_size)
     val_size = dataset_size - train_size
-
     train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
 
-    train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+    # Create DataLoader for training
+    train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+    # Get a batch of data
     batch = next(iter(train_loader))
     inputs, labels = batch
 
-    assert len(inputs.shape) == 3, "Inputs should be a 4D tensor"
-    assert inputs.shape[0] == 3, "Channel dimension should be 3 for RGB images"
-    assert inputs.shape[1] == 224 and inputs.shape[2] == 224, (
+    # Assertions to verify the shape of the input batch
+    assert len(inputs.shape) == 4, "Inputs should be a 4D tensor (batch_size, channels, height, width)"
+    assert inputs.shape[1] == 3, "Channel dimension should be 3 for RGB images"
+    assert inputs.shape[2] == 224 and inputs.shape[3] == 224, (
         "Images should be resized to 224x224"
     )
     assert labels.shape[0] == inputs.shape[0], "Labels batch size must match image batch size"
-
 
 @patch("shutil.move")
 def test_load_data_subset(mock_shutil_move, mock_kagglehub):
