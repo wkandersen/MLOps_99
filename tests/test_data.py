@@ -34,7 +34,7 @@ def test_load_data_batch_shapes(mock_shutil_move, mock_kagglehub):
     (and others) are as expected, e.g. (batch_size, 3, 224, 224).
     """
     # Load the data, and ensure the mock_kagglehub fixture is used to provide the dataset path
-    data, transform, class_names, dataset_path = load_data()
+    data, transform, class_names, dataset_path = load_data(None)
 
     # Create the CustomDataset instance
     dataset = CustomDataset(data, transform)
@@ -66,7 +66,7 @@ def test_load_data_subset(mock_shutil_move, mock_kagglehub):
     Test that the subset data loader (train_subset_new) has the correct length
     and is indeed smaller than the full training dataset.
     """
-    data, transform, class_names, dataset_path = load_data()
+    data, transform, class_names, dataset_path = load_data(None)
 
     dataset = CustomDataset(data, transform)
 
@@ -95,4 +95,4 @@ def test_data_load_exceptions(mock_path_exists, mock_kagglehub_download):
 
 # Run the tests 1 and 2
 if __name__ == "__main__":
-    pytest.main(["-v", __file__])
+    test_load_data_batch_shapes(mock_kagglehub)
