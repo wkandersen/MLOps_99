@@ -4,13 +4,16 @@ import torch
 from unittest.mock import patch
 from torch.utils.data import DataLoader
 from src.group_99.data import load_data, CustomDataset
+import yaml
+
+
 
 @pytest.fixture
 def mock_kagglehub(tmp_path):
     """
     Mock the kagglehub.dataset_download function and create a fake directory structure.
     """
-    fake_dataset_path = str(tmp_path / "sea_animals")
+    fake_dataset_path = "${HOME}/.cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste"
     os.makedirs(os.path.join(fake_dataset_path, "class1"), exist_ok=True)
     os.makedirs(os.path.join(fake_dataset_path, "class2"), exist_ok=True)
 
@@ -92,6 +95,5 @@ def test_data_load_exceptions(mock_path_exists, mock_kagglehub_download):
 
 # Run the tests 1 and 2
 if __name__ == "__main__":
-    pytest.main(["-v", __file__])
-    
+    print(get_dataset_path_from_config())
 
