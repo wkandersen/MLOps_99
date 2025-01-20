@@ -5,7 +5,7 @@ from src.group_99.model import ConvolutionalNetwork
 
 @pytest.fixture
 def config():
-    config_path = "/mnt/c/Users/Bruger/Desktop/MLOps/MLOps_99/src/group_99/config/config.yaml"
+    config_path = "src/group_99/config/config.yaml"
     return OmegaConf.load(config_path)
 
 def test_model_output_shape(config):
