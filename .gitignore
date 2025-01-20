@@ -1,5 +1,8 @@
 docs/site/
 
+#api key
+.env
+
 # test cache
 manual_test/
 

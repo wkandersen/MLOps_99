@@ -116,7 +116,6 @@ class ImageDataModule(LightningDataModule):
         return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=15)
 
 
-<<<<<<< HEAD
 # Example Usage
 if __name__ == "__main__":
     # Load the dataset and transform
@@ -134,7 +133,3 @@ if __name__ == "__main__":
     print(f"Number of training samples: {len(data_module.train_dataset)}")
     print(f"Number of validation samples: {len(data_module.val_dataset)}")
 
-=======
-if __name__ == "__main__":
-    load_data()
->>>>>>> ab9cf5df2fc84fa4aacf65b7e056d6b93292b7e6
