@@ -1,0 +1,7 @@
+hyperparameters:
+  batch_size: 128
+  lr: 0.01
+  epochs: 5
+  seed: 694290
+  num_classes: 101
+  dropout_rate: 0.5

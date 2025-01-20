@@ -1,0 +1,31 @@
+{
+  "os":  "Linux-6.1.119-1-MANJARO-x86_64-with-glibc2.40",
+  "python":  "CPython 3.12.7",
+  "startedAt":  "2025-01-20T09:36:59.138025Z",
+  "program":  "/home/william/Documents/DTU/5. Semester/MLOps/mlopsproject_99/src/group_99/train.py",
+  "codePath":  "src/group_99/train.py",
+  "git":  {
+    "remote":  "git@github.com:wkandersen/MLOps_99.git",
+    "commit":  "30b864dbc70b26c18ece8f9d8c92305b5b0d93e4"
+  },
+  "email":  "s224225@dtu.dk",
+  "root":  ".",
+  "host":  "william-zenbookum5401qab",
+  "executable":  "/home/william/MLOps/bin/python3.12",
+  "codePathLocal":  "src/group_99/train.py",
+  "cpu_count":  8,
+  "cpu_count_logical":  16,
+  "disk":  {
+    "/":  {
+      "total":  "236251389952",
+      "used":  "207297564672"
+    }
+  },
+  "memory":  {
+    "total":  "16142131200"
+  },
+  "cpu":  {
+    "count":  8,
+    "countLogical":  16
+  }
+}
