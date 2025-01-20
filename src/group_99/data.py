@@ -15,9 +15,8 @@ def load_data():
     """
     Loads the sea animals dataset. Downloads it using kagglehub if not already present.
     """
-    # Define the home directory and dataset path
-    home_dir = os.path.expanduser("~")
-    dataset_path = os.path.join(home_dir, ".cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste")
+    # Define the dataset path
+    dataset_path = os.getenv("DATASET_PATH", os.path.join(os.path.expanduser("~"), ".cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste"))
 
     # Check if dataset exists, otherwise download it
     if os.path.exists(dataset_path):
