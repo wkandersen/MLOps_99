@@ -36,7 +36,7 @@ def load_data(dataset_path=None):
         except Exception as e:
             raise RuntimeError("Dataset download failed") from e
     # Gather file paths and labels
-    
+
     classes = []
     paths = []
     for dirname, _, filenames in os.walk(dataset_path):
@@ -139,4 +139,5 @@ if __name__ == "__main__":
     # Print some statistics
     print(f"Number of training samples: {len(data_module.train_dataset)}")
     print(f"Number of validation samples: {len(data_module.val_dataset)}")
+    print(f"Datasetpath: {dataset_path}")
 
