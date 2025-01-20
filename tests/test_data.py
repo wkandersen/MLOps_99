@@ -1,10 +1,9 @@
 import os
 import pytest
 import torch
-from unittest.mock import patch, MagicMock, mock_open
+from unittest.mock import patch
 from torch.utils.data import DataLoader
 from src.group_99.data import load_data, CustomDataset
-
 
 @pytest.fixture
 def mock_kagglehub(tmp_path):
@@ -20,6 +19,7 @@ def mock_kagglehub(tmp_path):
     with open(os.path.join(fake_dataset_path, "class2", "2.jpg"), "w") as f:
         f.write("fake_image_data")
 
+    # Ensure that kagglehub is mocked to return the fake dataset path
     with patch("kagglehub.dataset_download", return_value=fake_dataset_path):
         yield fake_dataset_path
 
@@ -30,7 +30,7 @@ def test_load_data_batch_shapes(mock_shutil_move, mock_kagglehub):
     Test that the shapes of the data batches returned by train_loader
     (and others) are as expected, e.g. (batch_size, 3, 224, 224).
     """
-    data, transform, class_names, dataset_path = load_data()  # Fixed unpacking
+    data, transform, class_names, dataset_path = load_data()
 
     dataset = CustomDataset(data, transform)
 
@@ -58,7 +58,7 @@ def test_load_data_subset(mock_shutil_move, mock_kagglehub):
     Test that the subset data loader (train_subset_new) has the correct length
     and is indeed smaller than the full training dataset.
     """
-    data, transform, class_names, dataset_path = load_data()  # Fixed unpacking
+    data, transform, class_names, dataset_path = load_data()
 
     dataset = CustomDataset(data, transform)
 
