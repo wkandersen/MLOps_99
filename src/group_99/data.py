@@ -8,6 +8,7 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from pytorch_lightning import LightningDataModule
 from PIL import Image
+from kagglehub import kagglehub
 
 
 def load_data():
