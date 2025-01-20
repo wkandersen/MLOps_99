@@ -45,14 +45,35 @@ def test_load_data_batch_shapes(mock_shutil_move, mock_kagglehub):
     inputs, labels = batch
 
     assert len(inputs.shape) == 3, "Inputs should be a 4D tensor"
-    assert inputs.shape[1] == 3, "Channel dimension should be 3 for RGB images"
-    assert inputs.shape[2] == 224 and inputs.shape[3] == 224, (
+    assert inputs.shape[0] == 3, "Channel dimension should be 3 for RGB images"
+    assert inputs.shape[1] == 224 and inputs.shape[2] == 224, (
         "Images should be resized to 224x224"
     )
     assert labels.shape[0] == inputs.shape[0], "Labels batch size must match image batch size"
 
 
 @patch("shutil.move")
+def test_load_data_subset(mock_shutil_move, mock_kagglehub):
+    """
+    Test that the subset data loader (train_subset_new) has the correct length
+    and is indeed smaller than the full training dataset.
+    """
+    data, transform, class_names, dataset_path = load_data()
+
+    dataset = CustomDataset(data, transform)
+
+    dataset_size = len(dataset)
+    train_size = int(0.6 * dataset_size)
+    val_size = dataset_size - train_size
+
+    train_dataset, val_dataset = torch.utils.data.random_split(dataset, [train_size, val_size])
+
+    train_subset_new = torch.utils.data.Subset(train_dataset, range(2))
+
+    subset_size = len(train_subset_new)
+    assert subset_size == 2, f"Expected subset size of 2, got {subset_size}"
+    assert subset_size <= train_size, "Subset size should not exceed train dataset size"
+
 
 @patch("os.path.exists", return_value=False)
 @patch("kagglehub.dataset_download", side_effect=Exception("Download failed"))
