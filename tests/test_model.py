@@ -1,49 +1,54 @@
-import torch
+from omegaconf import OmegaConf
 import pytest
+import torch
 from src.group_99.model import ConvolutionalNetwork
 
-def test_model_output_shape():
-    # Define the number of classes based on your dataset
-    num_classes = 23
+@pytest.fixture
+def config():
+    config_path = "/mnt/c/Users/Bruger/Desktop/MLOps/MLOps_99/src/group_99/config/config.yaml"
+    return OmegaConf.load(config_path)
+
+def test_model_output_shape(config):
+    hparams = config.hyperparameters
+    torch.manual_seed(hparams['num_classes'])
+    torch.manual_seed(hparams['batch_size'])
     
-    # Fixed input size
+    num_classes = hparams['num_classes']
+    batch_size = hparams['batch_size']
+    
     input_height = 224
     input_width = 224
     
-    # Assume the class names correspond to the number of classes (for example 10 classes)
-    class_names = [f'class_{i}' for i in range(num_classes)]
+    # Directly pass num_classes, not a list of class names
+    model = ConvolutionalNetwork(num_classes)
+    device = torch.device('cpu')
+    model.to(device)
     
-    # Instantiate the model
-    model = ConvolutionalNetwork(class_names)
+    input_tensor = torch.randn(batch_size, 3, input_height, input_width, device=device)
     
-    # Create a random input tensor with the shape (batch_size, channels, height, width)
-    input_tensor = torch.randn(8, 3, input_height, input_width)  # Batch size of 8, 3 channels (RGB), 224x224 images
-    
-    # Get the output of the model
     output = model(input_tensor)
     
-    # Check if the output shape is as expected (batch_size, num_classes)
-    assert output.shape == (8, num_classes), f"Expected output shape (8, {num_classes}), but got {output.shape}"
+    assert output.shape == (batch_size, num_classes), f"Expected output shape ({batch_size}, {num_classes}), but got {output.shape}"
 
-def test_model_forward_pass():
-    # Define the number of classes based on your dataset
-    num_classes = 10  # Example for a classification problem with 10 classes
+def test_model_forward_pass(config):
+    hparams = config.hyperparameters
+    torch.manual_seed(hparams['num_classes'])
+    torch.manual_seed(hparams['batch_size'])
     
-    # Assume a fixed input size (224x224, as given in the test description)
+    num_classes = hparams['num_classes']
+    batch_size = hparams['batch_size']
+    
     input_height = 224
     input_width = 224
     
-    # Assume the class names correspond to the number of classes (for example 10 classes)
-    class_names = [f'class_{i}' for i in range(num_classes)]
+    # Directly pass num_classes, not a list of class names
+    model = ConvolutionalNetwork(num_classes)
+    device = torch.device('cpu')
+    model.to(device)
     
-    # Instantiate the model
-    model = ConvolutionalNetwork(class_names)
-    
-    # Create a random input tensor with the shape (batch_size, channels, height, width)
-    input_tensor = torch.randn(8, 3, input_height, input_width)  # Batch size of 8, 3 channels (RGB), 224x224 images
+    input_tensor = torch.randn(batch_size, 3, input_height, input_width, device=device) 
     
     try:
-        # Perform a forward pass
         output = model(input_tensor)
     except Exception as e:
         pytest.fail(f"Forward pass raised an exception: {e}")
