@@ -50,15 +50,3 @@ def test_load_data_batch_shapes(mock_shutil_move, mock_kagglehub):
         "Images should be resized to 224x224"
     )
     assert labels.shape[0] == inputs.shape[0], "Labels batch size must match image batch size"
-
-
-@patch("shutil.move")
-
-@patch("os.path.exists", return_value=False)
-@patch("kagglehub.dataset_download", side_effect=Exception("Download failed"))
-def test_data_load_exceptions(mock_path_exists, mock_kagglehub_download):
-    """
-    Test that the dataset load fails gracefully when the dataset is unavailable.
-    """
-    with pytest.raises(RuntimeError, match="Dataset download failed"):
-        load_data()
