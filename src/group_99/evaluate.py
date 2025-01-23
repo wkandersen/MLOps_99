@@ -18,7 +18,7 @@ model = ConvolutionalNetwork.load_from_checkpoint(checkpoint_path, class_names=c
 def evaluate_model(model, dataloader, class_names, device='cuda' if torch.cuda.is_available() else 'cpu'):
     """
     Evaluate the model on a given dataloader and print performance metrics.
-    
+
     Args:
         model: Trained PyTorch model.
         dataloader: DataLoader containing evaluation data.
@@ -34,11 +34,11 @@ def evaluate_model(model, dataloader, class_names, device='cuda' if torch.cuda.i
     with torch.no_grad():  # Disable gradient computation for evaluation
         for images, labels in dataloader:
             images, labels = images.to(device), labels.to(device)
-            
+
             # Forward pass
             outputs = model(images)
             _, preds = torch.max(outputs, 1)  # Get the predicted class
-            
+
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
 

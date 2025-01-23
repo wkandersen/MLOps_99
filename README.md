@@ -9,7 +9,7 @@ To further expand our exploration, we plan to experiment with convolutional neur
 
 For the initial dataset, we will use the provided training and validation splits of the Food-101 dataset. The images will undergo preprocessing, including resizing, normalization, and augmentation, to enhance the model's ability to generalize. While the focus will be on the dataset as-is, we may explore additional data-cleaning techniques.
 
-To evaluate the model we will look at the loss and accuracy of the model. We may also compare the model with a baseline model, ResNet50, using McNemar's test. 
+To evaluate the model we will look at the loss and accuracy of the model. We may also compare the model with a baseline model, ResNet50, using McNemar's test.
 In summary, our project combines PyTorch’s robust framework, the flexibility of timm, and modern deep learning techniques to create a high-performing classifier for the Food-101 dataset.
 
 ## Project structure

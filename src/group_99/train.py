@@ -22,13 +22,13 @@ def train(config):
     lr = hparams["lr"]
     epochs = hparams["epochs"]
 
-    
+
     # Set the random seed
     torch.manual_seed(seed)
 
     # Load the data
     data, transform, class_names, path = load_data()
-    
+
     # Initialize the data module
     datamodule = ImageDataModule(
         data=data,

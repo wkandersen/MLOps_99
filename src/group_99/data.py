@@ -121,7 +121,7 @@ class ImageDataModule(LightningDataModule):
 
 
 def main():
-    
+
     data, transform, class_names, dataset_path = load_data()
 
     # Create the data module
@@ -139,5 +139,3 @@ def main():
 if __name__ == "__main__":
     # Load the dataset and transform
     typer.run(main)
-
-

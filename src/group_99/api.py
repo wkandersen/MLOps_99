@@ -20,7 +20,7 @@ async def lifespan(app: FastAPI):
     model = ConvolutionalNetwork.load_from_checkpoint(
         checkpoint_path, class_names=class_names, lr=0.001
     )
-    
+
     # Force use of CPU
     device = torch.device("cpu")
     model.to(device)  # Ensure the model is on CPU
@@ -51,5 +51,5 @@ async def classify(data: UploadFile = File(...)):
         probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
         predicted_class_idx = probabilities.argmax().item()
         predicted_class = class_names[predicted_class_idx]
-    
+
     return {"predicted_class": predicted_class, "probabilities": probabilities.tolist()}

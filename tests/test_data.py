@@ -38,7 +38,7 @@ def test_custom_dataset(mock_dataset, mock_transform):
     # Mock PIL.Image.open
     with patch("PIL.Image.open", return_value=Image.new('RGB', (224, 224))) as mock_open:
         dataset = CustomDataset(mock_dataset, transform=mock_transform)
-        
+
         # Test length
         assert len(dataset) == 4, "Dataset length should match input data"
 

@@ -19,11 +19,11 @@ def dummy_dataloader():
 @pytest.fixture
 def timm_model():
     model = TimmModel(class_names=5, model_name="resnet18", lr=0.001, dropout=0.2)
-    
+
     # Ensure model is properly initialized by checking classifier structure
     assert isinstance(model.classifier, torch.nn.Sequential), "Classifier is not a Sequential model"
     assert hasattr(model.classifier[1], 'in_features'), "Classifier's Linear layer doesn't have 'in_features'"
-    
+
     return model
 
 def test_forward_pass(timm_model):

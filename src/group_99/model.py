@@ -11,7 +11,7 @@ class TimmModel(LightningModule):
         # Load a pre-trained model from timm
         self.backbone = timm.create_model(model_name, pretrained=True, num_classes=0)  # Remove the final classification layer
         backbone_output_features = self.backbone.num_features
-        
+
         # Add custom classification head
         self.classifier = nn.Sequential(
             nn.Dropout(dropout),
@@ -20,7 +20,7 @@ class TimmModel(LightningModule):
             nn.Dropout(dropout),
             nn.Linear(256, class_names),
         )
-        
+
         self.lr = lr
 
     def forward(self, X):

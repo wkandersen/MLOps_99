@@ -10,4 +10,3 @@ hyperparameters:
   seed: 694290
   num_classes: 23
   dropout_rate: 0.5
-
