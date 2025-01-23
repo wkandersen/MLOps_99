@@ -4,6 +4,7 @@ import torch
 from torchvision import transforms
 from PIL import Image
 from src.group_99.data import CustomDataset
+from unittest.mock import patch
 
 
 @pytest.fixture

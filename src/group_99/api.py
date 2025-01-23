@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from PIL import Image
 from contextlib import asynccontextmanager
 import torch
-from src.group_99.data import load_data, ImageDataModule
+from src.group_99.data import load_data
 from model import ConvolutionalNetwork
 
 @asynccontextmanager
