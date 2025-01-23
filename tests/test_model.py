@@ -52,3 +52,8 @@ def test_model_forward_pass(config):
         output = model(input_tensor)
     except Exception as e:
         pytest.fail(f"Forward pass raised an exception: {e}")
+
+
+
+if __name__ == "__main__":
+    pytest.main(["-v", __file__])

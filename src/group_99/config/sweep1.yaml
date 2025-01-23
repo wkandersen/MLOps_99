@@ -1,0 +1,41 @@
+<<<<<<< HEAD:src/group_99/config/sweep.yaml
+method: bayes
+
+program: train.py
+name: "sweep"
+project: "group99"  # change this
+entity: "s224225-danmarks-tekniske-universitet-dtu" # change this
+metric:
+    goal: minimize
+    name: validation_loss
+parameters:
+    learning_rate:
+        min: 0.0001
+        max: 0.1
+        distribution: log_uniform_values
+    batch_size:
+        values: [32, 64, 128]
+    epochs:
+        values: [5, 10, 15]
+run_cap: 10
+=======
+method: bayes
+program: src/group_99/train.py
+entity: "s224225-danmarks-tekniske-universitet-dtu"
+name: "sweep"
+metric:
+    goal: minimize
+    name: validation_loss
+parameters:
+    lr:
+        min: 0.0001
+        max: 0.1
+        distribution: log_uniform_values
+    batch_size:
+        values: [32, 64, 128]
+    epochs:
+        values: [5, 10, 15]
+run_cap: 10
+seed: 69420
+num_classes: 23
+>>>>>>> refs/remotes/origin/main:src/group_99/config/sweep1.yaml

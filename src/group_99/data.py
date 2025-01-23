@@ -9,14 +9,21 @@ from torchvision.datasets import ImageFolder
 from pytorch_lightning import LightningDataModule
 from PIL import Image
 from kagglehub import kagglehub
+import typer
 
 
-def load_data():
+def load_data(dataset_path=None):
     """
     Loads the sea animals dataset. Downloads it using kagglehub if not already present.
     """
-    # Define the dataset path
-    dataset_path = os.getenv("DATASET_PATH", os.path.join(os.path.expanduser("~"), ".cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste"))
+    # If no custom path is provided, use the default path
+    if dataset_path is None:
+        dataset_path = os.getenv(
+            "DATASET_PATH",
+            os.path.join(
+                os.path.expanduser("~"), ".cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste"
+            )
+        )
 
     # Check if dataset exists, otherwise download it
     if os.path.exists(dataset_path):
@@ -26,10 +33,11 @@ def load_data():
         try:
             path = kagglehub.dataset_download("vencerlanz09/sea-animals-image-dataste")
             print(f"Dataset downloaded at {path}")
+            dataset_path = path  # Ensure the returned path is used
         except Exception as e:
             raise RuntimeError("Dataset download failed") from e
-
     # Gather file paths and labels
+
     classes = []
     paths = []
     for dirname, _, filenames in os.walk(dataset_path):
@@ -116,9 +124,8 @@ class ImageDataModule(LightningDataModule):
         return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=15)
 
 
-# Example Usage
-if __name__ == "__main__":
-    # Load the dataset and transform
+def main():
+    
     data, transform, class_names, dataset_path = load_data()
 
     # Create the data module
@@ -132,4 +139,11 @@ if __name__ == "__main__":
     # Print some statistics
     print(f"Number of training samples: {len(data_module.train_dataset)}")
     print(f"Number of validation samples: {len(data_module.val_dataset)}")
+    print(f"Datasetpath: {dataset_path}")
+
+# Example Usage
+if __name__ == "__main__":
+    # Load the dataset and transform
+    typer.run(main)
+
 

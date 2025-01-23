@@ -1,0 +1,126 @@
+{
+    "os": "Linux-6.1.119-1-MANJARO-x86_64-with-glibc2.40",
+    "python": "CPython 3.12.7",
+    "heartbeatAt": "2025-01-22T09:53:51.762196",
+    "startedAt": "2025-01-22T09:53:51.152342",
+    "docker": null,
+    "args": [
+        "service",
+        "--debug",
+        "--port-filename",
+        "/tmp/tmp6vyo_bou/port-23604.txt",
+        "--pid",
+        "23604"
+    ],
+    "state": "running",
+    "program": "/home/william/Documents/DTU/5. Semester/MLOps/mlopsproject_99/src/group_99/train.py",
+    "codePathLocal": "src/group_99/train.py",
+    "codePath": "src/group_99/train.py",
+    "git": {
+        "remote": "git@github.com:wkandersen/MLOps_99.git",
+        "commit": "fcd47d06336727333415f5789e4c0dc2f7caf989"
+    },
+    "email": "s224225@student.dtu.dk",
+    "root": "/home/william/Documents/DTU/5. Semester/MLOps/mlopsproject_99",
+    "host": "william-zenbookum5401qab",
+    "username": null,
+    "executable": "/home/william/MLOps/bin/python",
+    "cpu_count": 8,
+    "cpu_count_logical": 16,
+    "cpu_freq": {
+        "current": 3199.28075,
+        "min": 1200.0,
+        "max": 3200.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2874.959,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 2875.006,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3593.251,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3599.429,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3599.348,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3142.084,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3445.276,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3285.771,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3590.861,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3139.893,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3202.767,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 1200.0,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3590.523,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3406.243,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3166.408,
+            "min": 1200.0,
+            "max": 3200.0
+        },
+        {
+            "current": 3373.487,
+            "min": 1200.0,
+            "max": 3200.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 220.02625274658203,
+            "used": 192.53353881835938
+        }
+    },
+    "memory": {
+        "total": 15.033531188964844
+    }
+}
