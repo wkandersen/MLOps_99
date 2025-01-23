@@ -1,13 +1,10 @@
-import os
 import torch
-import numpy as np
 from sklearn.metrics import accuracy_score, classification_report
 from src.group_99.model import TimmModel
-from src.group_99.data import load_data, CustomDataset
+from src.group_99.data import load_data
 from torchvision import transforms
 from PIL import Image
 from tqdm import tqdm
-from torch.utils.data import DataLoader
 
 # Load the model checkpoint
 checkpoint_path = "models/best-model-epoch=04-val_loss=0.77.ckpt"
