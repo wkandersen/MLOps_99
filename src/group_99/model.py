@@ -1,17 +1,16 @@
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
-from torch.utils.data import random_split, SubsetRandomSampler, DataLoader
 from pytorch_lightning import LightningModule
 import timm
 
 
 class TimmModel(LightningModule):
-    def __init__(self, class_names, model_name="resnet18", lr=0.001, dropout=0.2):
+    def __init__(self, class_names, model_name="resnet18", lr=0.001, dropout=0.2,num_features = None):
         super(TimmModel, self).__init__()
         # Load a pre-trained model from timm
         self.backbone = timm.create_model(model_name, pretrained=True, num_classes=0)  # Remove the final classification layer
-        backbone_output_features = self.backbone.get_classifier().in_features
+        backbone_output_features = self.backbone.num_features
         
         # Add custom classification head
         self.classifier = nn.Sequential(

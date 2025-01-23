@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from PIL import Image
 from contextlib import asynccontextmanager
 import torch
-from src.group_99.data import load_data, ImageDataModule
+from src.group_99.data import load_data
 from model import ConvolutionalNetwork
 
 @asynccontextmanager
@@ -15,7 +15,6 @@ async def lifespan(app: FastAPI):
 
     # Load data and initialize the datamodule
     data, transform, class_names, path = load_data()
-    datamodule = ImageDataModule(data, transform, batch_size=128)
 
     # Load the classification model from checkpoint
     model = ConvolutionalNetwork.load_from_checkpoint(

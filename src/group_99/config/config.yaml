@@ -1,18 +1,3 @@
-<<<<<<< HEAD
-hyperparameters:
-  batch_size: 128
-  lr: 0.01
-  epochs: 5
-  seed: 694290
-  num_classes: 23
-  dropout_rate: 0.5
-
-sweep:
-  program: train.py
-  name: "sweep"
-  project: "group99"  # change this
-  entity: "s224225-danmarks-tekniske-universitet-dtu"
-=======
 wandb:
   entity: "s224225-danmarks-tekniske-universitet-dtu"
   project: group_99
@@ -26,4 +11,3 @@ hyperparameters:
   num_classes: 23
   dropout_rate: 0.5
 
->>>>>>> refs/remotes/origin/main
