@@ -1,2 +1,0 @@
-*.ckpt filter=lfs diff=lfs merge=lfs -text
-models/best-model-epoch=04-val_loss=0.77.ckpt filter=lfs diff=lfs merge=lfs -text
