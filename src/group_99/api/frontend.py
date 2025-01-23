@@ -27,13 +27,13 @@ if uploaded_file is not None:
         image_buffer = io.BytesIO()
         image.save(image_buffer, format="JPEG")
         image_buffer.seek(0)
-        
+
         # Send the image to the FastAPI backend
         response = requests.post(
             API_URL,
             files={"file": ("uploaded_image.jpg", image_buffer, "image/jpeg")}
         )
-        
+
         # Handle the response
         if response.status_code == 200:
             data = response.json()
