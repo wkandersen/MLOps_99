@@ -140,6 +140,8 @@ def main():
     print(f"Number of training samples: {len(data_module.train_dataset)}")
     print(f"Number of validation samples: {len(data_module.val_dataset)}")
     print(f"Datasetpath: {dataset_path}")
+    print(f"Datadimensions: {data.shape[1]}")
+    print(f"Classes: {class_names}")
 
 # Example Usage
 if __name__ == "__main__":

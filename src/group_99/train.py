@@ -1,5 +1,5 @@
-from data import load_data, ImageDataModule
-from model import ConvolutionalNetwork
+from group_99.data import load_data, ImageDataModule
+from group_99.model import TimmModel
 import torch
 import pytorch_lightning as pl
 import hydra
@@ -38,9 +38,10 @@ def train(config):
     )
 
     # Define the model
-    model = ConvolutionalNetwork(
+    model = TimmModel(
         class_names=num_classes,
-        lr=lr  # Use learning rate from sweep configuration
+        lr=lr,  # Use learning rate from sweep configuration
+        num_features=data.shape[1]  # Use the appropriate dimension from data.shape
     ).to(device)
 
     # Set up the WandB logger
