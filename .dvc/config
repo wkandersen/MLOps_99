@@ -1,0 +1,7 @@
+[core]
+    remote = gcs-remote
+['remote "remote_storage"']
+    url = gs://mlops_99/
+    version_aware = true
+['remote "gcs-remote"']
+    url = gs://mlops_99

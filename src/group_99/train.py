@@ -3,7 +3,6 @@ from group_99.model import TimmModel
 import torch
 import pytorch_lightning as pl
 import hydra
-from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 
@@ -23,13 +22,13 @@ def train(config):
     lr = hparams["lr"]
     epochs = hparams["epochs"]
 
-    
+
     # Set the random seed
     torch.manual_seed(seed)
 
     # Load the data
     data, transform, class_names, path = load_data()
-    
+
     # Initialize the data module
     datamodule = ImageDataModule(
         data=data,

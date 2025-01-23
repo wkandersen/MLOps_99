@@ -2,7 +2,7 @@ from fastapi import FastAPI, File, UploadFile
 from PIL import Image
 from contextlib import asynccontextmanager
 import torch
-from src.group_99.data import load_data, ImageDataModule
+from src.group_99.data import load_data
 from model import ConvolutionalNetwork
 
 @asynccontextmanager
@@ -15,13 +15,12 @@ async def lifespan(app: FastAPI):
 
     # Load data and initialize the datamodule
     data, transform, class_names, path = load_data()
-    datamodule = ImageDataModule(data, transform, batch_size=128)
 
     # Load the classification model from checkpoint
     model = ConvolutionalNetwork.load_from_checkpoint(
         checkpoint_path, class_names=class_names, lr=0.001
     )
-    
+
     # Force use of CPU
     device = torch.device("cpu")
     model.to(device)  # Ensure the model is on CPU
@@ -52,5 +51,5 @@ async def classify(data: UploadFile = File(...)):
         probabilities = torch.nn.functional.softmax(outputs[0], dim=0)
         predicted_class_idx = probabilities.argmax().item()
         predicted_class = class_names[predicted_class_idx]
-    
+
     return {"predicted_class": predicted_class, "probabilities": probabilities.tolist()}

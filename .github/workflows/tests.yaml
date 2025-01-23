@@ -28,8 +28,8 @@ jobs:
 
       - name: Set Dataset Path (optional, if needed)
         run: |
-          echo "DATASET_PATH=${HOME}/.cache/kagglehub/datasets/vencerlanz09/sea-animals-image-dataste" >> $GITHUB_ENV
-
+          echo "DATASET_PATH=${HOME}/.cache/kagglehub/datasets/vencerlanz09/" \
+              "sea-animals-image-dataste" >> $GITHUB_ENV
 
       - name: Test with pytest
         run: |

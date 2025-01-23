@@ -11,4 +11,3 @@ hyperparameters:
   num_classes: 23
   input_features: 46656
   dropout_rate: 0.5
-

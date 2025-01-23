@@ -2,13 +2,8 @@ import torch
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
 from data import load_data, ImageDataModule
 from model import ConvolutionalNetwork
-import pytorch_lightning as pl
-import hydra
-from omegaconf import DictConfig
-from pytorch_lightning.callbacks import ModelCheckpoint
 
 # Define checkpoint path
 checkpoint_path = "models/bestmodel.ckpt"
@@ -23,7 +18,7 @@ model = ConvolutionalNetwork.load_from_checkpoint(checkpoint_path, class_names=c
 def evaluate_model(model, dataloader, class_names, device='cuda' if torch.cuda.is_available() else 'cpu'):
     """
     Evaluate the model on a given dataloader and print performance metrics.
-    
+
     Args:
         model: Trained PyTorch model.
         dataloader: DataLoader containing evaluation data.
@@ -39,11 +34,11 @@ def evaluate_model(model, dataloader, class_names, device='cuda' if torch.cuda.i
     with torch.no_grad():  # Disable gradient computation for evaluation
         for images, labels in dataloader:
             images, labels = images.to(device), labels.to(device)
-            
+
             # Forward pass
             outputs = model(images)
             _, preds = torch.max(outputs, 1)  # Get the predicted class
-            
+
             all_preds.extend(preds.cpu().numpy())
             all_labels.extend(labels.cpu().numpy())
 
