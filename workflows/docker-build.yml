@@ -33,4 +33,4 @@ jobs:
 
       - name: Push Docker image
         run: |
-          docker push us-central1-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }}
+          docker push europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }}
