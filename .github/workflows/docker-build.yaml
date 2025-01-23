@@ -32,6 +32,11 @@ jobs:
             -t europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }} \
             .
 
+      - name: Debug
+        run: |
+          gcloud auth list
+          gcloud artifacts docker images list europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker
+
       - name: Push Docker image
         run: |
           docker push europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }}
