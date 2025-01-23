@@ -52,7 +52,7 @@ def evaluate_model(model: torch.nn.Module, dataloader: torch.utils.data.DataLoad
     # Generate classification report
     print("\nClassification Report:")
     print(classification_report(all_labels, all_preds, target_names=class_names))
-    
+
     #save as txt
     with open('reports/figures/classification_report.txt', 'w') as f:
         f.write(classification_report(all_labels, all_preds, target_names=class_names))
