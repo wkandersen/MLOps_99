@@ -23,7 +23,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GROUP_99 }}
-          service_account_key: key.json  # Use the decoded key file
+          service_account_key: key.json  # Use the decoded key file.
           export_default_credentials: true
 
       - name: Debug - Verify Service Account Key
