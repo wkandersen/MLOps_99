@@ -1,7 +1,5 @@
 docs/site/
 
-models/
-
 #api key
 .env
 
