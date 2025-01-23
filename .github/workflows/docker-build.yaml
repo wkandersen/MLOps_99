@@ -35,6 +35,7 @@ jobs:
       - name: Debug - Verify Service Account Key
         run: |
           echo "${{ secrets.GCPSA_KEY }}" > key.json
+          cat key.json  # Print the key for debugging
           gcloud auth activate-service-account --key-file=key.json
           gcloud auth list
 
