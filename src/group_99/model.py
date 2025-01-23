@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from pytorch_lightning import LightningModule
 import timm
-from typing import List, Tuple, Any
+from typing import Tuple
 
 class TimmModel(LightningModule):
     def __init__(self, class_names: int, model_name: str = "resnet18", lr: float = 0.001, dropout: float = 0.2, num_features: int = None) -> None:
