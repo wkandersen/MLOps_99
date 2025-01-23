@@ -35,13 +35,21 @@ jobs:
         run: |
           gcloud auth configure-docker europe-west2-docker.pkg.dev --quiet
 
-      - name: Build Docker image
+      - name: Build Docker original image
         run: |
           docker build \
             -f dockerfiles/Dockerfile \
-            -t europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }} \
+            -t europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/orgdockerfile:${{ github.sha }} \
+            .
+
+      - name: Build Docker api image
+        run: |
+          docker build \
+            -f dockerfiles/api.dockerfile \
+            -t europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/apidockerfile:${{ github.sha }} \
             .
 
       - name: Push Docker image
         run: |
-          docker push europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }}
+          docker push europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/orgdockerfile:${{ github.sha }}
+          docker push europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/apidockerfile:${{ github.sha }}
