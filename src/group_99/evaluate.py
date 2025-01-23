@@ -3,17 +3,17 @@ from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 from data import load_data, ImageDataModule
-from model import ConvolutionalNetwork
+from src.group_99.model import TimmModel
 
 # Define checkpoint path
-checkpoint_path = "models/bestmodel.ckpt"
+checkpoint_path = "models/best-model-epoch=04-val_loss=0.77.ckpt"
 
 # Load data and initialize the datamodule
 data, transform, class_names, path = load_data()
 datamodule = ImageDataModule(data, transform, batch_size=128)
 
 # Load the model from checkpoint
-model = ConvolutionalNetwork.load_from_checkpoint(checkpoint_path, class_names=class_names, lr=0.001)
+model = TimmModel.load_from_checkpoint(checkpoint_path, class_names=class_names, num_features=3)
 
 def evaluate_model(model, dataloader, class_names, device='cuda' if torch.cuda.is_available() else 'cpu'):
     """

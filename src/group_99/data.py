@@ -6,9 +6,10 @@ from pytorch_lightning import LightningDataModule
 from PIL import Image
 from kagglehub import kagglehub
 import typer
+from typing import Tuple, List, Optional
 
 
-def load_data(dataset_path=None):
+def load_data(dataset_path: Optional[str] = None) -> Tuple[pd.DataFrame, transforms.Compose, List[str], str]:
     """
     Loads the sea animals dataset. Downloads it using kagglehub if not already present.
     """
@@ -69,17 +70,17 @@ def load_data(dataset_path=None):
 
 
 class CustomDataset(Dataset):
-    def __init__(self, data, transform=None):
+    def __init__(self, data: pd.DataFrame, transform: Optional[transforms.Compose] = None):
         """
         Custom dataset for handling image paths and labels.
         """
         self.data = data
         self.transform = transform
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> Tuple[Image.Image, int]:
         row = self.data.iloc[idx]
         img = Image.open(row['path']).convert('RGB')
         label = row['label']
@@ -91,13 +92,13 @@ class CustomDataset(Dataset):
 
 
 class ImageDataModule(LightningDataModule):
-    def __init__(self, data, transform, batch_size=32):
+    def __init__(self, data: pd.DataFrame, transform: transforms.Compose, batch_size: int = 32):
         super().__init__()
         self.data = data
         self.transform = transform
         self.batch_size = batch_size
 
-    def setup(self, stage=None):
+    def setup(self, stage: Optional[str] = None) -> None:
         """
         Splits the dataset into training and validation sets.
         """
@@ -107,21 +108,20 @@ class ImageDataModule(LightningDataModule):
         val_size = dataset_size - train_size
         self.train_dataset, self.val_dataset = random_split(dataset, [train_size, val_size])
 
-    def train_dataloader(self):
+    def train_dataloader(self) -> DataLoader:
         """
         Returns DataLoader for training dataset.
         """
         return DataLoader(self.train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=15)
 
-    def val_dataloader(self):
+    def val_dataloader(self) -> DataLoader:
         """
         Returns DataLoader for validation dataset.
         """
         return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=15)
 
 
-def main():
-
+def main() -> None:
     data, transform, class_names, dataset_path = load_data()
 
     # Create the data module

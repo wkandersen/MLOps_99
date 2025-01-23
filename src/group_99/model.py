@@ -1,17 +1,16 @@
-import torch.nn.functional as F
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from pytorch_lightning import LightningModule
 import timm
-
+from typing import List, Tuple, Any
 
 class TimmModel(LightningModule):
-    def __init__(self, class_names, model_name="resnet18", lr=0.001, dropout=0.2,num_features = None):
+    def __init__(self, class_names: int, model_name: str = "resnet18", lr: float = 0.001, dropout: float = 0.2, num_features: int = None) -> None:
         super(TimmModel, self).__init__()
         # Load a pre-trained model from timm
         self.backbone = timm.create_model(model_name, pretrained=True, num_classes=0)  # Remove the final classification layer
         backbone_output_features = self.backbone.num_features
-        
 
         # Add custom classification head
         self.classifier = nn.Sequential(
@@ -24,16 +23,16 @@ class TimmModel(LightningModule):
 
         self.lr = lr
 
-    def forward(self, X):
+    def forward(self, X: torch.Tensor) -> torch.Tensor:
         features = self.backbone(X)  # Extract features using the pre-trained model
         X = self.classifier(features)  # Pass features through the custom head
         return F.log_softmax(X, dim=1)
 
-    def configure_optimizers(self):
+    def configure_optimizers(self) -> torch.optim.Optimizer:
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
         return optimizer
 
-    def training_step(self, train_batch, batch_idx):
+    def training_step(self, train_batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> torch.Tensor:
         X, y = train_batch
         y_hat = self(X)
         loss = F.cross_entropy(y_hat, y)
@@ -43,7 +42,7 @@ class TimmModel(LightningModule):
         self.log("train_acc", acc)
         return loss
 
-    def validation_step(self, val_batch, batch_idx):
+    def validation_step(self, val_batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
         X, y = val_batch
         y_hat = self(X)
         loss = F.cross_entropy(y_hat, y)
@@ -52,7 +51,7 @@ class TimmModel(LightningModule):
         self.log("val_loss", loss)
         self.log("val_acc", acc)
 
-    def test_step(self, test_batch, batch_idx):
+    def test_step(self, test_batch: Tuple[torch.Tensor, torch.Tensor], batch_idx: int) -> None:
         X, y = test_batch
         y_hat = self(X)
         loss = F.cross_entropy(y_hat, y)
@@ -60,4 +59,3 @@ class TimmModel(LightningModule):
         acc = pred.eq(y.view_as(pred)).sum().item() / y.shape[0]
         self.log("test_loss", loss)
         self.log("test_acc", acc)
-
