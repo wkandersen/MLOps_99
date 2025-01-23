@@ -1,5 +1,6 @@
 [core]
     remote = gcs-remote
+    autostage = true
 ['remote "remote_storage"']
     url = gs://mlops_99/
     version_aware = true
