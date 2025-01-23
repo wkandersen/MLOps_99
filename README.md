@@ -12,6 +12,8 @@ For the initial dataset, we will use the provided training and validation splits
 To evaluate the model we will look at the loss and accuracy of the model. We may also compare the model with a baseline model, ResNet50, using McNemar's test.
 In summary, our project combines PyTorch’s robust framework, the flexibility of timm, and modern deep learning techniques to create a high-performing classifier for the Food-101 dataset.
 
+WE HAVE CHANGED THIS...
+
 ## Project structure
 
 The directory structure of the project looks like this:
