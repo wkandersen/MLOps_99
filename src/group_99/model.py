@@ -1,48 +1,36 @@
 import torch.nn.functional as F
-import pandas as pd
-from tqdm import tqdm
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.utils.data import random_split
-from torch.utils.data import DataLoader, Dataset, Subset
-from torch.utils.data import random_split, SubsetRandomSampler
-from torchvision import datasets, transforms, models 
-from torchvision.datasets import ImageFolder
-from torchvision.transforms import ToTensor
-from torchvision.utils import make_grid
+from torch.utils.data import random_split, SubsetRandomSampler, DataLoader
 from pytorch_lightning import LightningModule
-from pytorch_lightning import Trainer
-import pytorch_lightning as pl
+import timm
 
 
-class ConvolutionalNetwork(LightningModule):
-    
-    def __init__(self, class_names, lr=0.001, dropout=0.2):
-        super(ConvolutionalNetwork, self).__init__()
-        self.conv1 = nn.Conv2d(3, 6, 3, 1)
-        self.conv2 = nn.Conv2d(6, 16, 3, 1)
-        self.fc1 = nn.Linear(16 * 54 * 54, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 20)
-        self.fc4 = nn.Linear(20, class_names)
+class TimmModel(LightningModule):
+    def __init__(self, class_names, model_name="resnet18", lr=0.001, dropout=0.2):
+        super(TimmModel, self).__init__()
+        # Load a pre-trained model from timm
+        self.backbone = timm.create_model(model_name, pretrained=True, num_classes=0)  # Remove the final classification layer
+        backbone_output_features = self.backbone.get_classifier().in_features
+        
+        # Add custom classification head
+        self.classifier = nn.Sequential(
+            nn.Dropout(dropout),
+            nn.Linear(backbone_output_features, 256),
+            nn.ReLU(),
+            nn.Dropout(dropout),
+            nn.Linear(256, class_names),
+        )
+        
         self.lr = lr
-        self.dropout = nn.Dropout(dropout)
 
     def forward(self, X):
-        X = F.relu(self.conv1(X))
-        X = F.max_pool2d(X, 2, 2)
-        X = F.relu(self.conv2(X))
-        X = F.max_pool2d(X, 2, 2)
-        X = X.view(-1, 16 * 54 * 54)
-        X = self.dropout(F.relu(self.fc1(X)))  # Apply dropout after ReLU
-        X = self.dropout(F.relu(self.fc2(X)))  # Apply dropout after ReLU
-        X = self.dropout(F.relu(self.fc3(X)))  # Apply dropout after ReLU
-        X = self.fc4(X)
+        features = self.backbone(X)  # Extract features using the pre-trained model
+        X = self.classifier(features)  # Pass features through the custom head
         return F.log_softmax(X, dim=1)
 
-    def configure_optimizers(self, lr=0.001):
-        optimizer = torch.optim.Adam(self.parameters(), lr)
+    def configure_optimizers(self):
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
         return optimizer
 
     def training_step(self, train_batch, batch_idx):
