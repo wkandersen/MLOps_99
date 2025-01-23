@@ -14,14 +14,24 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v3
 
+      - name: Decode Service Account Key
+        run: |
+          echo "${{ secrets.GCPSA_KEY }}" | base64 --decode > key.json
+          cat key.json  # Print the key for debugging
+
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
           project_id: ${{ secrets.GROUP_99 }}
-          service_account_key: ${{ secrets.GCPSA_KEY }}
+          service_account_key: key.json  # Use the decoded key file
           export_default_credentials: true
 
-      - name: Configure docker to use gcloud
+      - name: Debug - Verify Service Account Key
+        run: |
+          gcloud auth activate-service-account --key-file=key.json
+          gcloud auth list
+
+      - name: Authenticate Docker to Google Cloud
         run: |
           gcloud auth configure-docker europe-west2-docker.pkg.dev --quiet
 
@@ -31,12 +41,6 @@ jobs:
             -f dockerfiles/Dockerfile \
             -t europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }} \
             .
-
-      - name: Debug - Verify Service Account Key
-        run: |
-          echo "${{ secrets.GCPSA_KEY }}" > key.json
-          gcloud auth activate-service-account --key-file=key.json
-          gcloud auth list
 
       - name: Push Docker image
         run: |
