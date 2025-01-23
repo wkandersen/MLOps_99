@@ -1,12 +1,9 @@
-import os
 import pytest
 import pandas as pd
 import torch
-from unittest.mock import patch, MagicMock
-from torch.utils.data import DataLoader
 from torchvision import transforms
 from PIL import Image
-from src.group_99.data import load_data, CustomDataset, ImageDataModule
+from src.group_99.data import CustomDataset
 
 
 @pytest.fixture

@@ -1,11 +1,7 @@
 import os
-import random
-import numpy as np
 import pandas as pd
-import torch
 from torch.utils.data import DataLoader, Dataset, random_split
 from torchvision import transforms
-from torchvision.datasets import ImageFolder
 from pytorch_lightning import LightningDataModule
 from PIL import Image
 from kagglehub import kagglehub
@@ -133,8 +129,6 @@ def main():
 
     # Set up the data loaders
     data_module.setup()
-    train_loader = data_module.train_dataloader()
-    val_loader = data_module.val_dataloader()
 
     # Print some statistics
     print(f"Number of training samples: {len(data_module.train_dataset)}")

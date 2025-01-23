@@ -2,13 +2,8 @@ import torch
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
 from data import load_data, ImageDataModule
 from model import ConvolutionalNetwork
-import pytorch_lightning as pl
-import hydra
-from omegaconf import DictConfig
-from pytorch_lightning.callbacks import ModelCheckpoint
 
 # Define checkpoint path
 checkpoint_path = "models/bestmodel.ckpt"

@@ -1,7 +1,6 @@
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
-from torch.utils.data import random_split, SubsetRandomSampler, DataLoader
 from pytorch_lightning import LightningModule
 import timm
 

@@ -15,7 +15,6 @@ async def lifespan(app: FastAPI):
 
     # Load data and initialize the datamodule
     data, transform, class_names, path = load_data()
-    datamodule = ImageDataModule(data, transform, batch_size=128)
 
     # Load the classification model from checkpoint
     model = ConvolutionalNetwork.load_from_checkpoint(
