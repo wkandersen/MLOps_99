@@ -6,7 +6,6 @@ import hydra
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from omegaconf import DictConfig
-from google.cloud import secretmanager
 import wandb
 
 
