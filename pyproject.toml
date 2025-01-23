@@ -25,3 +25,6 @@ line-length = 120
 
 [tool.coverage.run]
 omit = ["tests/*"]
+
+[project.scripts]
+load_data = "src.group_99.data:main"

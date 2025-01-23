@@ -9,6 +9,7 @@ from torchvision.datasets import ImageFolder
 from pytorch_lightning import LightningDataModule
 from PIL import Image
 from kagglehub import kagglehub
+import typer
 
 
 def load_data(dataset_path=None):
@@ -123,9 +124,8 @@ class ImageDataModule(LightningDataModule):
         return DataLoader(self.val_dataset, batch_size=self.batch_size, shuffle=False, num_workers=15)
 
 
-# Example Usage
-if __name__ == "__main__":
-    # Load the dataset and transform
+def main():
+    
     data, transform, class_names, dataset_path = load_data()
 
     # Create the data module
@@ -140,4 +140,10 @@ if __name__ == "__main__":
     print(f"Number of training samples: {len(data_module.train_dataset)}")
     print(f"Number of validation samples: {len(data_module.val_dataset)}")
     print(f"Datasetpath: {dataset_path}")
+
+# Example Usage
+if __name__ == "__main__":
+    # Load the dataset and transform
+    typer.run(main)
+
 

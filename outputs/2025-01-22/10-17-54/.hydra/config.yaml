@@ -1,0 +1,12 @@
+hyperparameters:
+  batch_size: 16
+  lr: 0.01
+  epochs: 5
+  seed: 694290
+  num_classes: 23
+  dropout_rate: 0.5
+sweep:
+  program: train.py
+  name: sweep
+  project: mlopsproject_99
+  entity: s224225-danmarks-tekniske-universitet-dtu

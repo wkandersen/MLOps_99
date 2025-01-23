@@ -3,39 +3,49 @@ from model import ConvolutionalNetwork
 import torch
 import pytorch_lightning as pl
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, OmegaConf
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-import wandb
 
-@hydra.main(config_path="config", config_name="config.yaml", version_base="1.3")
-def train(config: DictConfig):
+
+@hydra.main(config_path="config", config_name="config", version_base="1.3")  # Use only sweep1.yaml
+def train(config):
     # Check if CUDA is available
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    # Hyperparameters from config
     hparams = config.hyperparameters
-    torch.manual_seed(hparams['seed'])
+
+    # Unpack the hyperparameters
+    seed = hparams["seed"]
+    batch_size = hparams["batch_size"]
+    num_classes = hparams["num_classes"]
+    lr = hparams["lr"]
+    epochs = hparams["epochs"]
+
+    
+    # Set the random seed
+    torch.manual_seed(seed)
 
     # Load the data
     data, transform, class_names, path = load_data()
-
+    
     # Initialize the data module
     datamodule = ImageDataModule(
         data=data,
         transform=transform,
-        batch_size=hparams['batch_size']
+        batch_size=batch_size  # Pass the batch size from sweep configuration
     )
 
     # Define the model
     model = ConvolutionalNetwork(
-        class_names=hparams['num_classes'],
-        lr=hparams['lr']
+        class_names=num_classes,
+        lr=lr  # Use learning rate from sweep configuration
     ).to(device)
 
-    # wandb.init(project=config.sweep.project, entity=config.sweep.entity, config=hparams)
-    wandb_logger = WandbLogger(project=config.sweep.project, entity=config.sweep.entity, config=hparams)
+    # Set up the WandB logger
+    wandb_logger = WandbLogger(project=config.wandb.project, entity=config.wandb.entity, name=config.wandb.name)
+
     # Set up the ModelCheckpoint callback
     checkpoint_callback = ModelCheckpoint(
         monitor="val_loss",                # Metric to monitor
@@ -48,13 +58,13 @@ def train(config: DictConfig):
 
     # Set up the PyTorch Lightning trainer
     trainer = pl.Trainer(
-        max_epochs=hparams['epochs'],
+        max_epochs=epochs,  # Use the epochs from sweep configuration
         callbacks=[checkpoint_callback],   # Add the ModelCheckpoint callback
         logger=wandb_logger,               # Use WandB logger
         accelerator="gpu" if torch.cuda.is_available() else "cpu"  # Use GPU if available
     )
 
-    print(f"Training model for {hparams['epochs']} epochs...")
+    print(f"Training model for {epochs} epochs...")
 
     # Train the model
     trainer.fit(model, datamodule)
@@ -65,7 +75,6 @@ def train(config: DictConfig):
 
     # Print the path of the best model
     print(f"Best model saved at: {checkpoint_callback.best_model_path}")
-
 
 if __name__ == "__main__":
     train()

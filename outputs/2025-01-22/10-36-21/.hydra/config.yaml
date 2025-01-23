@@ -1,0 +1,22 @@
+method: bayes
+program: src/group_99/train.py
+entity: s224225-danmarks-tekniske-universitet-dtu
+name: sweep
+project: mlopsproject_99
+metric:
+  goal: minimize
+  name: validation_loss
+parameters:
+  lr: 16
+  batch_size:
+    values:
+    - 32
+    - 64
+    - 128
+  epochs:
+    values:
+    - 5
+    - 10
+    - 15
+run_cap: 10
+num_classes: 23
