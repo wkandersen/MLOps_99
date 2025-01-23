@@ -1,31 +1,27 @@
-from src.group_99.data import load_data, ImageDataModule
-from src.group_99.model import TimmModel
+from data import load_data, ImageDataModule
+from model import ConvolutionalNetwork
 import torch
 import pytorch_lightning as pl
 import hydra
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
-from omegaconf import DictConfig
-from google.cloud import secretmanager
-import wandb
 
 
-@hydra.main(config_path="config", config_name="config", version_base="1.3")
-def train(config: DictConfig) -> None:
+@hydra.main(config_path="config", config_name="config", version_base="1.3")  # Use only sweep1.yaml
+def train(config):
     # Check if CUDA is available
-    device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    wandb.login()
-
-    hparams: DictConfig = config.hyperparameters
+    hparams = config.hyperparameters
 
     # Unpack the hyperparameters
-    seed: int = hparams["seed"]
-    batch_size: int = hparams["batch_size"]
-    num_classes: int = hparams["num_classes"]
-    lr: float = hparams["lr"]
-    epochs: int = hparams["epochs"]
+    seed = hparams["seed"]
+    batch_size = hparams["batch_size"]
+    num_classes = hparams["num_classes"]
+    lr = hparams["lr"]
+    epochs = hparams["epochs"]
+
 
     # Set the random seed
     torch.manual_seed(seed)
@@ -34,24 +30,23 @@ def train(config: DictConfig) -> None:
     data, transform, class_names, path = load_data()
 
     # Initialize the data module
-    datamodule: ImageDataModule = ImageDataModule(
+    datamodule = ImageDataModule(
         data=data,
         transform=transform,
         batch_size=batch_size  # Pass the batch size from sweep configuration
     )
 
     # Define the model
-    model: TimmModel = TimmModel(
+    model = ConvolutionalNetwork(
         class_names=num_classes,
-        lr=lr,  # Use learning rate from sweep configuration
-        num_features=data.shape[1]  # Use the appropriate dimension from data.shape
+        lr=lr  # Use learning rate from sweep configuration
     ).to(device)
 
     # Set up the WandB logger
-    wandb_logger: WandbLogger = WandbLogger(project=config.wandb.project, entity=config.wandb.entity, name=config.wandb.name)
+    wandb_logger = WandbLogger(project=config.wandb.project, entity=config.wandb.entity, name=config.wandb.name)
 
     # Set up the ModelCheckpoint callback
-    checkpoint_callback: ModelCheckpoint = ModelCheckpoint(
+    checkpoint_callback = ModelCheckpoint(
         monitor="val_loss",                # Metric to monitor
         dirpath="models/",                 # Directory to save checkpoints
         filename="best-model-{epoch:02d}-{val_loss:.2f}",  # Filename format
@@ -61,7 +56,7 @@ def train(config: DictConfig) -> None:
     )
 
     # Set up the PyTorch Lightning trainer
-    trainer: pl.Trainer = pl.Trainer(
+    trainer = pl.Trainer(
         max_epochs=epochs,  # Use the epochs from sweep configuration
         callbacks=[checkpoint_callback],   # Add the ModelCheckpoint callback
         logger=wandb_logger,               # Use WandB logger

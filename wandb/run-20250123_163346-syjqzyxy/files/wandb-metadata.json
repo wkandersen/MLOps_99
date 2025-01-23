@@ -1,0 +1,29 @@
+{
+  "os":  "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "python":  "CPython 3.11.11",
+  "startedAt":  "2025-01-23T15:33:46.990143Z",
+  "program":  "-m src.group_99.train",
+  "git":  {
+    "remote":  "https://github.com/wkandersen/MLOps_99",
+    "commit":  "39055183463314093ae0d4b7eda234ea8624ab2e"
+  },
+  "email":  "s224225@dtu.dk",
+  "root":  ".",
+  "host":  "DESKTOP-M31H4OQ",
+  "executable":  "/home/s220235/miniconda3/envs/mlops/bin/python",
+  "cpu_count":  4,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "1081101176832",
+      "used":  "25511747584"
+    }
+  },
+  "memory":  {
+    "total":  "8095031296"
+  },
+  "cpu":  {
+    "count":  4,
+    "countLogical":  8
+  }
+}

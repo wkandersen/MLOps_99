@@ -1,0 +1,12 @@
+wandb:
+  entity: s224225-danmarks-tekniske-universitet-dtu
+  project: group_99
+  name: run_${now:%Y-%m-%d_%H-%M-%S}
+hyperparameters:
+  batch_size: 64
+  lr: 0.001
+  epochs: 5
+  seed: 694290
+  num_classes: 23
+  input_features: 46656
+  dropout_rate: 0.5
