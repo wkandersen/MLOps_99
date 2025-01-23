@@ -57,10 +57,10 @@ will check the repositories and the code to verify your answers.
 * [X] Remember to fill out the `requirements.txt` and `requirements_dev.txt` file with whatever dependencies that you
     are using (M2+M6)
 * [ ] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
-* [ ] Do a bit of code typing and remember to document essential parts of your code (M7)
+* [x] Do a bit of code typing and remember to document essential parts of your code (M7)
 * [ ] Setup version control for your data or part of your data (M8)
 * [x] Add command line interfaces and project commands to your code where it makes sense (M9)
-* [ ] Construct one or multiple docker files for your code (M10)
+* [x] Construct one or multiple docker files for your code (M10)
 * [ ] Build the docker files locally and make sure they work as intended (M10)
 * [X] Write one or multiple configurations files for your experiments (M11)
 * [X] Used Hydra to load the configurations and manage your hyperparameters (M11)

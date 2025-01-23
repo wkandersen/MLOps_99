@@ -6,6 +6,8 @@ import hydra
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from omegaconf import DictConfig
+from google.cloud import secretmanager
+import wandb
 
 
 @hydra.main(config_path="config", config_name="config", version_base="1.3")
@@ -13,6 +15,8 @@ def train(config: DictConfig) -> None:
     # Check if CUDA is available
     device: torch.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
+
+    wandb.login()
 
     hparams: DictConfig = config.hyperparameters
 
