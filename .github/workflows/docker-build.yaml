@@ -28,7 +28,7 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -f path/to/Dockerfile \
+            -f path/to/dockerfiles \
             -t europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }} \
             .
 
