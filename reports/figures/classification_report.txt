@@ -1,0 +1,29 @@
+                 precision    recall  f1-score   support
+
+          Clams       0.88      0.68      0.76       194
+         Corals       0.58      0.92      0.71       189
+          Crabs       0.98      0.96      0.97       197
+        Dolphin       0.86      0.92      0.89       312
+            Eel       0.71      0.84      0.77       185
+           Fish       0.87      0.75      0.80       210
+     Jelly Fish       0.92      0.97      0.94       333
+        Lobster       0.98      0.66      0.79       202
+    Nudibranchs       0.80      0.87      0.84       197
+        Octopus       0.70      0.80      0.75       220
+          Otter       0.98      1.00      0.99       186
+        Penguin       0.94      0.90      0.92       210
+        Puffers       0.83      0.82      0.83       206
+       Sea Rays       0.86      0.80      0.83       202
+    Sea Urchins       1.00      0.97      0.99       256
+       Seahorse       0.91      0.87      0.89       182
+           Seal       0.98      0.78      0.87       172
+         Sharks       0.85      0.79      0.82       247
+         Shrimp       0.88      0.72      0.79       199
+          Squid       0.95      0.76      0.84       208
+       Starfish       0.93      0.99      0.96       179
+Turtle_Tortoise       0.98      0.94      0.96       772
+          Whale       0.66      0.91      0.76       227
+
+       accuracy                           0.87      5485
+      macro avg       0.87      0.85      0.85      5485
+   weighted avg       0.88      0.87      0.87      5485
