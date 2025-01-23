@@ -32,10 +32,11 @@ jobs:
             -t europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker/my-image:${{ github.sha }} \
             .
 
-      - name: Debug
+      - name: Debug - Verify Service Account Key
         run: |
+          echo "${{ secrets.GCPSA_KEY }}" > key.json
+          gcloud auth activate-service-account --key-file=key.json
           gcloud auth list
-          gcloud artifacts docker images list europe-west2-docker.pkg.dev/${{ secrets.GROUP_99 }}/mlops-99-docker
 
       - name: Push Docker image
         run: |
