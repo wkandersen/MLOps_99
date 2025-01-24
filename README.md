@@ -1,18 +1,14 @@
 # group_99
-The primary goal of this project is to develop and optimize a deep learning-based classifier for the Food-101 dataset (https://www.kaggle.com/datasets/kmader/food41/data). This dataset consists of 101 distinct classes of dishes, with 1,000 images per class, making it a robust benchmark for multi-class classification tasks in computer vision. The classifier we aim to build will effectively distinguish between these 101 classes, achieving high accuracy and robust performance across diverse data samples.
 
-To achieve this, we will leverage PyTorch with "PyTorch-ResNet50-84%" (https://www.kaggle.com/code/pranshu15/pytorch-resnet50-84) as our framework. Additionally, we plan to incorporate timm (Torchvision Image Models) as our third-party PyTorch-based package to streamline access to pre-trained models and enhance our model's performance through efficient feature extraction and transfer learning techniques.
+The primary goal of this project is to develop and optimize a deep learning-based classifier for the Sea Animals dataset ([Sea Animals dataset](https://www.kaggle.com/datasets/vencerlanz09/sea-animals-image-dataste)). This dataset consists of images of different sea animal species, and we aim to classify them accurately. The dataset provides a rich source for multi-class classification tasks, with 23 different classes of sea animals to train for classification.
 
-Our starting point will be the ResNet50-based model implementation. This model has already demonstrated promising results on the Food-101 dataset, achieving an 84% classification accuracy. Building upon this foundation, we aim to fine-tune the ResNet50 architecture using advanced techniques like data augmentation, learning rate scheduling, and regularization.
+To achieve this, we will leverage PyTorch Lightning and take inspiration from the model found in the Sea Animals PyTorch Lightning CNN implementation ([Sea Animals PyTorch Lightning CNN](https://www.kaggle.com/code/stpeteishii/sea-animals-pytorch-lightning-cnn)). This framework provides a structured approach to deep learning, simplifying the training process while improving model performance through well-structured components like data loaders, optimizers, and validation metrics.
 
-To further expand our exploration, we plan to experiment with convolutional neural networks (CNNs) beyond ResNet50. This includes investigating novel architectures such as EfficientNet, DenseNet, or even custom CNNs designed to better capture the unique features of the Food-101 dataset. These experiments will help us identify the optimal architecture for our classification task.
+Our starting point will be the CNN architecture designed for the Sea Animals dataset in the PyTorch Lightning framework, utilizing TIMM as our third-party framework with ResNet18. This model has shown solid results in classifying images, and we will enhance its capabilities.
 
-For the initial dataset, we will use the provided training and validation splits of the Food-101 dataset. The images will undergo preprocessing, including resizing, normalization, and augmentation, to enhance the model's ability to generalize. While the focus will be on the dataset as-is, we may explore additional data-cleaning techniques.
+The dataset will be used with the provided training and validation splits, where preprocessing will include resizing and normalization with torch vision transform. This will help enhance the model’s ability to generalize to unseen examples.
 
-To evaluate the model we will look at the loss and accuracy of the model. We may also compare the model with a baseline model, ResNet50, using McNemar's test.
-In summary, our project combines PyTorch’s robust framework, the flexibility of timm, and modern deep learning techniques to create a high-performing classifier for the Food-101 dataset.
-
-WE HAVE CHANGED THIS...
+In summary, our project will leverage PyTorch Lightning, TIMM, and modern deep learning techniques to develop a high-performing classifier for the Sea Animals dataset using CNNs like ResNet18.
 
 ## Project structure
 
@@ -21,13 +17,16 @@ The directory structure of the project looks like this:
 ├── .github/                  # Github actions and dependabot
 │   ├── dependabot.yaml
 │   └── workflows/
-│       └── tests.yaml
+│       ├── tests.yaml
+│       ├── codecheck.yaml
+│       ├── pre_commit.yaml
+│       └── docker_build.yaml
 ├── configs/                  # Configuration files
-├── data/                     # Data directory
-│   ├── processed
-│   └── raw
+├── datadrift/                # Data drift test
+│   └── data_drift.py
 ├── dockerfiles/              # Dockerfiles
 │   ├── api.Dockerfile
+│   ├── Dockerfile
 │   └── train.Dockerfile
 ├── docs/                     # Documentation
 │   ├── mkdocs.yml
@@ -39,16 +38,18 @@ The directory structure of the project looks like this:
 │   └── figures/
 ├── src/                      # Source code
 │   ├── project_name/
+│   │   ├── api/
+│   │   │   ├── __init__.py
+│   │   │   ├── frontend.py
+│   │   │   └── main.py
 │   │   ├── __init__.py
-│   │   ├── api.py
 │   │   ├── data.py
+│   │   ├── command.py
 │   │   ├── evaluate.py
-│   │   ├── models.py
-│   │   ├── train.py
-│   │   └── visualize.py
+│   │   ├── model.py
+│   │   └── train.py
 └── tests/                    # Tests
 │   ├── __init__.py
-│   ├── test_api.py
 │   ├── test_data.py
 │   └── test_model.py
 ├── .gitignore
