@@ -21,7 +21,6 @@ The directory structure of the project looks like this:
 │       ├── codecheck.yaml
 │       ├── pre_commit.yaml
 │       └── docker_build.yaml
-├── configs/                  # Configuration files
 ├── datadrift/                # Data drift test
 │   └── data_drift.py
 ├── dockerfiles/              # Dockerfiles
