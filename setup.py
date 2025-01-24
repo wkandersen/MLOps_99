@@ -6,7 +6,7 @@ setup(
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     install_requires=[
-        "pythonjsonlogger",  # Add other dependencies from requirements.txt here
+        "python-json-logger",  # Add other dependencies from requirements.txt here
     ],
     entry_points={
         "console_scripts": [

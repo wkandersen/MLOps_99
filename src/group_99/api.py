@@ -5,6 +5,7 @@ import torch
 from src.group_99.data import load_data
 from model import ConvolutionalNetwork
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Load and clean up model on startup and shutdown."""
