@@ -43,9 +43,9 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install wandb
-        
+
     - name: Log in to WANDB    
       env:
         WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
       run: |
-        wandb login
+        python -m wandb login
