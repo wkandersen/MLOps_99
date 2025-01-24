@@ -9,9 +9,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the application code into the container
-COPY src/group_99/main.py .
+COPY src/group_99/api/main.py .
 COPY src/group_99/api/frontend.py .
-COPY src/group_99/api/model.py .
+COPY src/group_99/model.py .
+COPY src/group_99/data.py .
 COPY models/best-model-epoch=04-val_loss=0.77.ckpt .
 
 # Expose ports for FastAPI (8000) and Streamlit (8501)

@@ -56,7 +56,7 @@ will check the repositories and the code to verify your answers.
 * [X] Add a model to `model.py` and a training procedure to `train.py` and get that running (M6)
 * [X] Remember to fill out the `requirements.txt` and `requirements_dev.txt` file with whatever dependencies that you
     are using (M2+M6)
-* [ ] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
+* [x] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
 * [x] Do a bit of code typing and remember to document essential parts of your code (M7)
 * [ ] Setup version control for your data or part of your data (M8)
 * [x] Add command line interfaces and project commands to your code where it makes sense (M9)
@@ -93,7 +93,7 @@ will check the repositories and the code to verify your answers.
 
 ### Week 3
 
-* [ ] Check how robust your model is towards data drifting (M27)
+* [x] Check how robust your model is towards data drifting (M27)
 * [ ] Deploy to the cloud a drift detection API (M27)
 * [ ] Instrument your API with a couple of system metrics (M28)
 * [ ] Setup cloud monitoring of your instrumented application (M28)
@@ -106,10 +106,10 @@ will check the repositories and the code to verify your answers.
 
 * [ ] Write some documentation for your application (M32)
 * [ ] Publish the documentation to GitHub Pages (M32)
-* [ ] Revisit your initial project description. Did the project turn out as you wanted?
+* [x] Revisit your initial project description. Did the project turn out as you wanted?
 * [ ] Create an architectural diagram over your MLOps pipeline
-* [ ] Make sure all group members have an understanding about all parts of the project
-* [ ] Uploaded all your code to GitHub
+* [x] Make sure all group members have an understanding about all parts of the project
+* [x] Uploaded all your code to GitHub
 
 ## Group information
 
@@ -143,7 +143,7 @@ s224197, s224225, s220235
 >
 > Answer:
 
---- question 3 fill here ---
+We used the third-party framework Pytorch Image Models (timm) in our project. The framework provided us acces to pre-trained models including ResNet18 which we used as our base for our model. We loaded the pre-trained model using timm.create model and customized it to fit our dataset and classification problem. timm allowed us to efficiently implement transfer learning which significantly reduced the time we used to build and train the model. This meant that timm helped create a more accurate model, that was build faster than what we had previosly used. As timm made the process more effective it could have been an idea to use a more complex model to get a higher accuracy for example ResNet50.
 
 ## Coding environment
 
@@ -163,7 +163,9 @@ s224197, s224225, s220235
 >
 > Answer:
 
---- question 4 fill here ---
+We used a txt file for requirements to manage our dependencies. The list was auto-genereted by running "pip freeze > requirements.txt". Whenever new packages were installed, they were either added to the file manually or re-generated to ensure the file remained up to date. To get a complete copy of our development environment, you had to write "pip install -r requirements_dev.txt" in the terminal.
+Additionally, most of the group also used Anaconda to keep track of all packages and dependecies, having a local environment dedicated to the project. For a brief period, we experimented with Dependabot to track dependecies however as a result of issues with compatibility and unintended changes to the codebase, we decided to remove it.
+
 
 ### Question 5
 
@@ -194,7 +196,9 @@ s224197, s224225, s220235
 >
 > Answer:
 
---- question 6 fill here ---
+We implemented automated code quality and formatting rules using Pre-commit CI and GitHub Actions workflows. The pre-commit hooks ensure that our code met quality standards before being comitted while the GitHub Actions workflow were used for code formatting. We used the hooks to remove trailing whitespace, fix end-of-file issues, validate YAML files and to keep the requirements.txt file sorted and consistent. We used Ruff for the code formatting to check and automatically format the code on every push or pull request to the main brainch.
+
+These concepts are important for larger project as they streamline the code making it easier to get an overview of the project. It also reduces errors as some errors are detected earlier than they would otherwise.
 
 ## Version control
 

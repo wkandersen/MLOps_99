@@ -1,12 +1,12 @@
 {
   "os":  "Linux-6.1.119-1-MANJARO-x86_64-with-glibc2.40",
   "python":  "CPython 3.12.7",
-  "startedAt":  "2025-01-23T17:01:56.907271Z",
+  "startedAt":  "2025-01-24T08:07:40.563233Z",
   "program":  "/home/william/Documents/DTU/5. Semester/MLOps/mlopsproject_99/src/group_99/train.py",
   "codePath":  "src/group_99/train.py",
   "git":  {
     "remote":  "git@github.com:wkandersen/MLOps_99.git",
-    "commit":  "b2b9a8e77b07a49ab0fbb791246d46c643f9d388"
+    "commit":  "79ce3039ed2698dd421a10017e9ecd50686e10ee"
   },
   "email":  "s224225@dtu.dk",
   "root":  ".",
@@ -18,11 +18,11 @@
   "disk":  {
     "/":  {
       "total":  "236251389952",
-      "used":  "197439258624"
+      "used":  "200676065280"
     }
   },
   "memory":  {
-    "total":  "16142131200"
+    "total":  "16142118912"
   },
   "cpu":  {
     "count":  8,
