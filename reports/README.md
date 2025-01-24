@@ -58,7 +58,7 @@ will check the repositories and the code to verify your answers.
     are using (M2+M6)
 * [x] Remember to comply with good coding practices (`pep8`) while doing the project (M7)
 * [x] Do a bit of code typing and remember to document essential parts of your code (M7)
-* [ ] Setup version control for your data or part of your data (M8)
+* [x] Setup version control for your data or part of your data (M8)
 * [x] Add command line interfaces and project commands to your code where it makes sense (M9)
 * [x] Construct one or multiple docker files for your code (M10)
 * [ ] Build the docker files locally and make sure they work as intended (M10)
@@ -67,14 +67,14 @@ will check the repositories and the code to verify your answers.
 * [ ] Use profiling to optimize your code (M12)
 * [ ] Use logging to log important events in your code (M14)
 * [x] Use Weights & Biases to log training progress and other important metrics/artifacts in your code (M14)
-* [ ] Consider running a hyperparameter optimization sweep (M14)
+* [x] Consider running a hyperparameter optimization sweep (M14)
 * [x] Use PyTorch-lightning (if applicable) to reduce the amount of boilerplate in your code (M15)
 
 ### Week 2
 
 * [x] Write unit tests related to the data part of your code (M16)
 * [x] Write unit tests related to model construction and or model training (M16)
-* [x] Calculate the code coverage (M16) (38%) coverage run --source=src -m pytest tests/ -> coverage report
+* [x] Calculate the code coverage (M16)
 * [x] Get some continuous integration running on the GitHub repository (M17)
 * [x] Add caching and multi-os/python/pytorch testing to your continuous integration (M17)
 * [x] Add a linting step to your continuous integration (M17)
@@ -282,7 +282,7 @@ DVC tracks changes in data files. We could modify our datasets, or roll back to 
 
 We have organized our continuous integration into four separate workflows: one for linting, one for pre-commit hooks, one for unit tests and one for Docker build and push.
 
-The unit tests workflow are executed on three operating systems: ubuntu-latest, windows-latest and macos-latest. The workflow can be seen here: https://github.com/wkandersen/MLOps_99/actions/runs/12947205871
+The unit tests workflow are executed on three operating systems: ubuntu-latest, windows-latest and macos-latest. The workflow can be seen here: https://github.com/wkandersen/MLOps_99/actions/runs/12949990034
 
 For the linting, we use Ruff, which is run on the ubuntu-latest environment.
 
@@ -564,7 +564,6 @@ For future work in the cloud we would look forward to the clouds scalability and
 >
 > Answer:
 
- dd
 
 ### Question 29
 
