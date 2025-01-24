@@ -42,5 +42,4 @@ jobs:
     - name: Log in to WANDB
       env:
         WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
-      run: |
-        wandb login $WANDB_API_KEY
+
