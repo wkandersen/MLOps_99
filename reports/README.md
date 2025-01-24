@@ -181,7 +181,7 @@ Additionally, most of the group also used Anaconda to keep track of all packages
 >
 > Answer:
 
- dd
+We used the cookiecutter template which was shown in the exercise modules because we thought it was quite fitting for the scope of our project. We have not modified it much from how it looks, but added some more folders for example the data_drifting and we also created a seperate folder under the src/group_99 for the api files. We didn’t make use of the data folder because the way our data was downloaded made more sense to just download it directly from kagglehub. The overall structure is the same, but we also added config.yaml files for use in wandb and hydra.
 
 ### Question 6
 
@@ -217,7 +217,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
- dd
+We implemented six unit tests. One test validated the data file ensuring that it loads data correctly and that it retrieves images and labels as expected. The other five tests tested our model. Here it focused on the forward pass producing correctly shaped outputs, the training step computes valid losses, the validation and test executes without errors and the optimizer is configured properly.
 
 ### Question 8
 
@@ -232,7 +232,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
- dd
+The total code coverage of code is 25%, which includes all our source code. We are far from covering the complete code with this low percentage. Even with a 100% coverage we wouldn’t trust the code to be error free. This is because code coverage only covers whether the lines of code are executed during tests and not if the code behaves correctly in every scenario. Also high coverage does not guarantee that conducting a test is meaningful or that edge cases are handled correct. Errors could still happen from, for example unanticipated inputs. For instance, the code might pass all the tests but still fail in real-world scenarios as they can’t capture everything.
 
 ### Question 9
 
@@ -247,7 +247,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
- dd
+ In our workflow we mostly used the main branch for making changes and then committing them directly. However, we occasionally created branches for specific tasks, such as optimizing existing code, and used pull requests to merge changes if the new implementation proved better. Using branches and pull request more systematically could probably have improved a lot on our version control process. If we for example had made a branch for each group member, we would probably have had fewer merge conflicts. The pull request would also have provided a better view of code changes and the collaborators, which would make debugging easier.
 
 ### Question 10
 
@@ -262,7 +262,8 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
- dd
+We did use DVC, but had problems using it on Vertex AI, and therefore turned our dataset into a CSV file for the google cloud bucket aswell.
+DVC tracks changes in data files. We could modify our datasets, or roll back to previous versions if needed. With dvc push and pull we could sync datasets without sharing large files. Linking dvc to our Google Cloud bucket, made it accessible for different machines and locations. So DVC makes it possible to track changes in data, in case we need to retrain the model on a updated dataset, and prevents inconsistencies like training a model on one dataset while deploying it with another.
 
 ### Question 11
 
@@ -279,7 +280,19 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
- dd
+We have organized our continuous integration into four separate workflows: one for linting, one for pre-commit hooks, one for unit tests and one for Docker build and push.
+
+The unit tests workflow are executed on three operating systems: ubuntu-latest, windows-latest and macos-latest. The workflow can be seen here: https://github.com/wkandersen/MLOps_99/actions/runs/12947205871
+
+For the linting, we use Ruff, which is run on the ubuntu-latest environment.
+
+For unit tests and linting the worflows include dependency caching enabled by pip cache as this reduces the test execution time. The workflows are triggered automatically on push and pull requests for the main branch ensuring that new code changes are validated immediately.
+
+For the pre-commit hooks it was run on ubuntu-latest as the only operating system. The pre-commit framework was made to automate the tasks of trailing whitespace, fixing end-of-file errors, checking YAML syntax and updating requirements.txt. The hooks are triggered on each commit, helping to ensure consistent code formatting.
+
+All three workflows are executed using Python 3.11.
+
+The Docker workflow builds two images (application and API) using separate Dockerfiles, tags them with the Git commit SHA, and pushes them to Google Cloud Registry. It decodes a base64-encoded service account key from GitHub Secrets to authenticate with GCP. While dependency caching is used in other workflows, Docker layer caching is not yet enabled here. The workflow ensures images are validated and deployed only after builds.
 
 ## Running code and tracking experiments
 
@@ -346,7 +359,11 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- ddd
+ Docker is very useful, for creating consistent and repoducible environments across development and deployment. We build two primary images:
+Core application image, that handles data processing and model training. Built using a dockerfile, it installs dependencies, copies the codebase and configures the runtime environment.
+API service image: Hosts a FastAPI server for predictions, exposes port 8000, and defines startup commands.
+For cloud deployment, images are pushed to google cloud registry with tags tied to the git commit SHA, ensuring traceability.
+The key benefits are: Reproducibility: identical environments in development, testing and production. Scalability: Easy deployment to cloud platforms like GCP. Isolation: speration of application and API dependencies.
 
 ### Question 16
 
@@ -378,7 +395,9 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+We successfully created a Google Cloud Storage Bucket and linked it to our project using Data Version Control (DVC), enabling efficient tracking and storage of our data. Additionally, we attempted to create a Virtual Machine (VM) instance to facilitate our workflows, but encountered issues when trying to enable the compute.googleapis.com API. Despite having the appropriate permissions and ownership role, we were denied access to enable the service. This appears to be a technical bug requiring further assistance from Google support to resolve.
+
+Furthermore, we set up both an Artifact Registry and a Container Registry to streamline the management of Docker images and application dependencies for our project. These registries will allow us to build, store, and deploy our containerized applications efficiently in future stages of our work.
 
 ### Question 18
 
@@ -393,7 +412,9 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+We attempted to utilize the Google Cloud Platform (GCP) Compute Engine service as the backbone for our project by creating a Virtual Machine (VM) instance. The goal was to use the VM for running our application, managing workloads, and facilitating tasks like training machine learning models and data preprocessing. However, we encountered an issue when trying to enable the compute.googleapis.com API, which is required to create and manage VM instances. Despite having appropriate ownership permissions, we were denied access to enable this service. This issue appears to be a bug, and we are seeking assistance from Google support to resolve it.
+
+As a result, we were unable to proceed with creating or using any specific type of VM. However, our initial plan was to use an E2-standard VM instance, which offers a balance of cost and performance. This type of instance would have provided sufficient CPU, memory, and scalability to support our workloads efficiently. Once the issue with enabling the API is resolved, we intend to revisit this step and implement our VM usage as planned.
 
 ### Question 19
 
@@ -402,7 +423,8 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+ ![bucket_Q19](figures/<image>.<extension>)
+
 
 ### Question 20
 
@@ -411,7 +433,7 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+![artifact_Q20](figures/<image>.<extension>)
 
 ### Question 21
 
@@ -420,7 +442,7 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+
 
 ### Question 22
 
@@ -435,7 +457,11 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+We explored using Compute Engine by attempting to create a virtual machine (VM) for training. Unfortunately, we were blocked from enabling the compute.googleapis.com API, even though we had owner permissions on the project. This prevented us from creating a VM instance for manual training.
+
+We then turned to Vertex AI, turning our dataset into a csv file, as it didn’t seem to accept our DVC dataset. We didn’t want to let the Vertex AI make our model, but instead train our own model through Vertex, but we were once again denied access to enabling google apis, this time for artifact registry.
+
+These issues with  API access prevented us from successfully training our model in the cloud. We are working to resolve these challenges and plan to retry the process once the necessary corrections are implemented.
 
 ## Deployment
 
@@ -483,7 +509,9 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+ We did not perform any unit testing or load testing for our API. However, if we had we would have set up the unit testing using pytest to test individual components of FASTAPI endpoints. Here we would test the image preprocessing pipeline to ensure that the image files are correctly handled, and we would then test if they were correctly passed to the model.
+
+We would have set up the load testing using locust to simulate many users interacting with our application. Here we would test how the API perform under varying loads such as sending requests from 100, 200, 1000 simultaneous user and then track metrics such as response time and failure rate.
 
 ### Question 26
 
@@ -498,7 +526,9 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+We did not manage to implement monitoring. We would like to have implemented monitoring for our deployed model such that we can track the model’s performance over time. Here we would measure different metrics such as error rates or prediction accuracy. By logging the metrics we would be able to identify any unexpected behavior, degradation in the model or shifts in data distribution.
+
+We would also have monitored the memory usage to ensure the application is operating within the expected parameters. This would be integrated using Prometheus that would provide us with real-time insights and notifications, which would help maintain our deployed model and keep it reliable.
 
 ## Overall discussion of project
 
@@ -517,7 +547,8 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+We spent 7kr in total on Google Cloud during the project. Most of it went towards repeated attempts to set up and configure Engine instances. Unfortunately we couldn’t get them fully working due to permission issues, even though we were listed as project owners. Second most was spent on cloud storage, which worked fine.
+For future work in the cloud we would look forward to the clouds scalability and ease of access, (when granted access of cause). Problems like permission settings, became a major roadblock without direct support. We hit a wall trying to troubleshoot on our own, and all online help directed us to contacting google support, who haven’t answered yet.  that said, services like cloud storage seems efficient, quick, reliable and cost-effective. With help from google support we dream of exploring AI API’s pr serverless tools. For now it feel like an untapped potential for our proejct, and while having some learning-curve frustrations, we’re optimistic about its possibilities once we have overcome the initial barriers.
 
 ### Question 28
 
@@ -550,7 +581,10 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 >
 > Answer:
 
- dd
+![mlops_overview.drawio](figures/<image>.<extension>)
+
+The starting point in our main python application that downloads data to the local storage, as seen on the picture. The template is based on the one given during the exercises and intiated with the cookie cutter package. Our experiments are made reproducable by using the hydra config file system to make sure that the same hyperparamaters are used. We log our experiments by using wandb which logs to their website by using an API hidden in our github secrets enviroment. To make the python usable, we have conda enviroment which makes sure all the necessary requirements are there to make the code usable. After the model has been trained we have developed a frontend application that can be used by a user to upload a picture which is then predicted by the best model we have trained. We have used Git version control along data version control with google. Furthermore, we have implemented github actions to make sure that push/pulls are made correctcly and global variables are initiated correctly with example the wandb api. We have also implemented unittests that also make sure that the files work correctly.
+
 
 ### Question 30
 
@@ -565,6 +599,8 @@ As seen in the wandb logged results, we used wandb to track the results of our m
 > Answer:
 
  We had many struggles throughout the project, which started when we had a too big dataset for making small MVP as the subsetting we tried did not work as intended. Therefore we changed to a dataset that was more feasible to finish the project in time. Another big issue was the cloud computing which was not working as intended. Many small issues arised like hyperparameter sweep not working and api unit tests not working either, which we decided to not do to focus on the parts of project that were working and improve on them. We would've like to run the cloud computing to try and run a more in-depth test with more epochs and possibly run with different hyperparameters but unfortunately, we had issues with the API access which didn't allow us to use the cloud computing.
+
+ We had problems with API enabling on Google Cloud, denying us access to use both Engine and Vertex. Besides when trying to set up the data for Vertex, the DVC files did not seem to be compatible with Google Cloud, forcing us to convert the data into a CSV file instead. When trying to link some of the cloud services to Git, the json keys seemed problematic, only after converting to base64 were we able to connect the two. Testing some of the Docker files turned out to be problematic too, as the storage amount available at some PCs wasn’t enough to handle the images.
 
 ### Question 31
 
