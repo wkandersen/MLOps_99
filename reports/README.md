@@ -196,7 +196,7 @@ We used the cookiecutter template which was shown in the exercise modules becaus
 >
 > Answer:
 
- We implemented automated code quality and formatting rules using Pre-commit CI and GitHub Actions workflows. The pre-commit hooks ensure that our code met quality standards before being comitted while the GitHub Actions workflow were used for code formatting. We used the hooks to remove trailing whitespace, fix end-of-file issues, validate YAML files and to keep the requirements.txt file sorted and consistent. We used Ruff for the code formatting to check and automatically format the code on every push or pull request to the main brainch.
+ We implemented automated code quality and formatting rules using Pre-commit CI and GitHub Actions workflows. The pre-commit hooks ensured that our code met quality standards before being comitted while the GitHub Actions workflow were used for code formatting. We used the hooks to remove trailing whitespace, fix end-of-file issues, validate YAML files and to keep the requirements.txt file sorted and consistent. We used Ruff for the code formatting to check and automatically format the code on every push or pull request to the main brainch.
 
 These concepts are important for larger project as they streamline the code making it easier to get an overview of the project. It also reduces errors as some errors are detected earlier than they would otherwise.
 
@@ -326,7 +326,7 @@ The Docker workflow builds two images (application and API) using separate Docke
 >
 > Answer:
 
- To make sure that experiments are reproducible, we used Hydra which was also explained the last questions. In our code we loaded the hyperparameters with hydra by calling the `@hydra.main(config_path="config", config_name="config", version_base="1.3")` in the code. After this we could could call the hyperparameters located in the config.yaml file by using `hparams = config.hyperparameters`. Now all the hyperparameters defined in the config.yaml would be called by `hparams["name_of_hparam"]`, this ensured that any changes to the config file would be loaded into the code. This made it easy to reproduce the experiments as we could just change the hyperparameters in the config file and then run the code again.
+ To make sure that experiments are reproducible, we used Hydra which was also explained the last questions. In our code we loaded the hyperparameters with hydra by calling the `@hydra.main(config_path="config", config_name="config", version_base="1.3")` in the code. After this we could call the hyperparameters located in the config.yaml file by using `hparams = config.hyperparameters`. Now all the hyperparameters defined in the config.yaml would be called by `hparams["name_of_hparam"]`, this ensured that any changes to the config file would be loaded into the code. This made it easy to reproduce the experiments as we could just change the hyperparameters in the config file and then run the code again.
 
 ### Question 14
 
@@ -378,7 +378,7 @@ The key benefits are: Reproducibility: identical environments in development, te
 >
 > Answer:
 
- We many times ran into issues that required debugging, and for fixing used a combination of different tactics which include print statements, the debugger in vs code and chatgpt. Alot of the issues also came from general setting up the model with things like input dimensions, layers and other similar problems. We have not made that much use of profiling in our code, which in hindsight would be something we would like to implement to especially highlight important parts of the code. This would be useful to see where the code is running slow and where we could optimize it or identify bottlenecks.
+ We ran into issues many times that required debugging, and for fixing used a combination of different tactics which include print statements, the debugger in vs code and chatgpt. Alot of the issues also came from general setting up the model with things like input dimensions, layers and other similar problems. We have not made that much use of profiling in our code, which in hindsight would be something we would like to implement to especially highlight important parts of the code. This would be useful to see where the code is running slow and where we could optimize it or identify bottlenecks.
 
 ## Working in the cloud
 
@@ -548,7 +548,7 @@ We would also have monitored the memory usage to ensure the application is opera
 > Answer:
 
 We spent 7kr in total on Google Cloud during the project. Most of it went towards repeated attempts to set up and configure Engine instances. Unfortunately we couldn’t get them fully working due to permission issues, even though we were listed as project owners. Second most was spent on cloud storage, which worked fine.
-For future work in the cloud we would look forward to the clouds scalability and ease of access, (when granted access of cause). Problems like permission settings, became a major roadblock without direct support. We hit a wall trying to troubleshoot on our own, and all online help directed us to contacting google support, who haven’t answered yet.  that said, services like cloud storage seems efficient, quick, reliable and cost-effective. With help from google support we dream of exploring AI API’s pr serverless tools. For now it feel like an untapped potential for our proejct, and while having some learning-curve frustrations, we’re optimistic about its possibilities once we have overcome the initial barriers.
+For future work in the cloud we would look forward to the clouds scalability and ease of access, (when granted access of cause). Problems like permission settings, became a major roadblock without direct support. We hit a wall trying to troubleshoot on our own, and all online help directed us to contacting google support, who haven’t answered yet. That said, services like cloud storage seems efficient, quick, reliable and cost-effective. With help from google support we dream of exploring AI API’s pr serverless tools. For now it feel like an untapped potential for our proejct, and while having some learning-curve frustrations, we’re optimistic about its possibilities once we have overcome the initial barriers.
 
 ### Question 28
 
@@ -621,7 +621,7 @@ The starting point in our main python application that downloads data to the loc
 
  Student s220235 worked on workflows, specifically for dockerfiles, as well as DVC and Google Cloud. Setting up the services, preparing work on the virtual machines (and getting permissions). Helped working on unittests.
 
-Student s224197 worked on pytests and workflows, specifically codecheck, pre-commit hooks and pytests. Furthermore, the student was in charge of the data file.
+Student s224197 worked on pytests and workflows, specifically codecheck, pre-commit hooks and pytests. Furthermore, the student was in charge of the data file and general formatting.
 
 All members contributed to the code and helped with debugging.
 
