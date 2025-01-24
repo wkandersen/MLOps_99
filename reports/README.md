@@ -143,7 +143,7 @@ s224197, s224225, s220235
 >
 > Answer:
 
-We used the third-party framework Pytorch Image Models (timm) in our project. The framework provided us acces to pre-trained models including ResNet18 which we used as our base for our model. We loaded the pre-trained model using timm.create model and customized it to fit our dataset and classification problem. timm allowed us to efficiently implement transfer learning which significantly reduced the time we used to build and train the model. This meant that timm helped create a more accurate model, that was build faster than what we had previosly used. As timm made the process more effective it could have been an idea to use a more complex model to get a higher accuracy for example ResNet50.
+ We used the third-party framework Pytorch Image Models (timm) in our project. The framework provided us acces to pre-trained models including ResNet18 which we used as our base for our model. We loaded the pre-trained model using timm.create model and customized it to fit our dataset and classification problem. timm allowed us to efficiently implement transfer learning which significantly reduced the time we used to build and train the model. This meant that timm helped create a more accurate model, that was build faster than what we had previosly used. As timm made the process more effective it could have been an idea to use a more complex model to get a higher accuracy for example ResNet50.
 
 ## Coding environment
 
@@ -163,7 +163,7 @@ We used the third-party framework Pytorch Image Models (timm) in our project. Th
 >
 > Answer:
 
-We used a txt file for requirements to manage our dependencies. The list was auto-genereted by running "pip freeze > requirements.txt". Whenever new packages were installed, they were either added to the file manually or re-generated to ensure the file remained up to date. To get a complete copy of our development environment, you had to write "pip install -r requirements_dev.txt" in the terminal.
+ We used a txt file for requirements to manage our dependencies. The list was auto-genereted by running "pip freeze > requirements.txt". Whenever new packages were installed, they were either added to the file manually or re-generated to ensure the file remained up to date. To get a complete copy of our development environment, you had to write "pip install -r requirements_dev.txt" in the terminal.
 Additionally, most of the group also used Anaconda to keep track of all packages and dependecies, having a local environment dedicated to the project. For a brief period, we experimented with Dependabot to track dependecies however as a result of issues with compatibility and unintended changes to the codebase, we decided to remove it.
 
 
@@ -181,7 +181,7 @@ Additionally, most of the group also used Anaconda to keep track of all packages
 >
 > Answer:
 
---- question 5 fill here ---
+ dd
 
 ### Question 6
 
@@ -196,7 +196,7 @@ Additionally, most of the group also used Anaconda to keep track of all packages
 >
 > Answer:
 
-We implemented automated code quality and formatting rules using Pre-commit CI and GitHub Actions workflows. The pre-commit hooks ensure that our code met quality standards before being comitted while the GitHub Actions workflow were used for code formatting. We used the hooks to remove trailing whitespace, fix end-of-file issues, validate YAML files and to keep the requirements.txt file sorted and consistent. We used Ruff for the code formatting to check and automatically format the code on every push or pull request to the main brainch.
+ We implemented automated code quality and formatting rules using Pre-commit CI and GitHub Actions workflows. The pre-commit hooks ensure that our code met quality standards before being comitted while the GitHub Actions workflow were used for code formatting. We used the hooks to remove trailing whitespace, fix end-of-file issues, validate YAML files and to keep the requirements.txt file sorted and consistent. We used Ruff for the code formatting to check and automatically format the code on every push or pull request to the main brainch.
 
 These concepts are important for larger project as they streamline the code making it easier to get an overview of the project. It also reduces errors as some errors are detected earlier than they would otherwise.
 
@@ -217,7 +217,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 7 fill here ---
+ dd
 
 ### Question 8
 
@@ -232,7 +232,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 8 fill here ---
+ dd
 
 ### Question 9
 
@@ -247,7 +247,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 9 fill here ---
+ dd
 
 ### Question 10
 
@@ -262,7 +262,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 10 fill here ---
+ dd
 
 ### Question 11
 
@@ -279,7 +279,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 11 fill here ---
+ dd
 
 ## Running code and tracking experiments
 
@@ -298,7 +298,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 12 fill here ---
+ We used Hydra to configure experiments, using a config file – config.yaml – to define our hyperparameters such as batch size, epochs and learning rate. The experiment is run by calling our train function with Hydra loading the necessary configurations automatically. It would work by writing the following: “python train.py hyperparameters.lr=0.01 hyperparameters.batch_size=32 hyperparmeters.epochs=10”.
 
 ### Question 13
 
@@ -313,7 +313,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 13 fill here ---
+ To make sure that experiments are reproducible, we used Hydra which was also explained the last questions. In our code we loaded the hyperparameters with hydra by calling the `@hydra.main(config_path="config", config_name="config", version_base="1.3")` in the code. After this we could could call the hyperparameters located in the config.yaml file by using `hparams = config.hyperparameters`. Now all the hyperparameters defined in the config.yaml would be called by `hparams["name_of_hparam"]`, this ensured that any changes to the config file would be loaded into the code. This made it easy to reproduce the experiments as we could just change the hyperparameters in the config file and then run the code again.
 
 ### Question 14
 
@@ -330,7 +330,8 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 14 fill here ---
+ ![wandb_logged_results](figures/<image>.<extension>)
+As seen in the wandb logged results, we used wandb to track the results of our model. We tried using the hyperparameter sweep to check for different values of learning rate and batch size, but unfortunately we had issues with hydra and wandb integration. We therefore chose to just track the loss and accuarcy of the model to see how it performed. The loss and accuracy are important metrics to track as they inform us about how well the model is performing. The loss shows how well the model is learning and the accuracy shows how well the model is performing on the test data. By tracking these metrics we can see if the model is learning and if it is overfitting or underfitting. We also tracked the metric trainer/global_step which shows the numbers of steps the model has taken. It is important because it shows how many steps the model has taken to learn the data. It would have been interesting to also plot the validation accuaracy vs the training accuracy to see if the model was overfitting or underfitting. This would have been a good metric to track as it would show how well the model is generalizing to the test data and furthermore if we should try and adjust our dropout rate or other hyperparameters to improve the model.
 
 ### Question 15
 
@@ -345,7 +346,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 15 fill here ---
+ ddd
 
 ### Question 16
 
@@ -360,7 +361,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 16 fill here ---
+ We many times ran into issues that required debugging, and for fixing used a combination of different tactics which include print statements, the debugger in vs code and chatgpt. Alot of the issues also came from general setting up the model with things like input dimensions, layers and other similar problems. We have not made that much use of profiling in our code, which in hindsight would be something we would like to implement to especially highlight important parts of the code. This would be useful to see where the code is running slow and where we could optimize it or identify bottlenecks.
 
 ## Working in the cloud
 
@@ -377,7 +378,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 17 fill here ---
+ dd
 
 ### Question 18
 
@@ -392,7 +393,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 18 fill here ---
+ dd
 
 ### Question 19
 
@@ -401,7 +402,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 19 fill here ---
+ dd
 
 ### Question 20
 
@@ -410,7 +411,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 20 fill here ---
+ dd
 
 ### Question 21
 
@@ -419,7 +420,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 21 fill here ---
+ dd
 
 ### Question 22
 
@@ -434,7 +435,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 22 fill here ---
+ dd
 
 ## Deployment
 
@@ -451,7 +452,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 23 fill here ---
+ We did manage to write an API for our model. We used FastAPI to do this and then used streamlit to create a frontend application that used our best model that we had trained and made a prediction of the uploaded image. Since our model validated to an accuracy of around 80% on the sea animals, we got quite good results from uploading pictures to the API. We did not really use the command line interface for uploading pictures because we had issues with it not working, so we found it was easier to make it a frontend application. This was then used for the prediction.
 
 ### Question 24
 
@@ -467,7 +468,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 24 fill here ---
+ We deployed our API locally, but have also created a docker image for it in the cloud. As stated in the earlier question, we used a combination of FastAPI and streamlit to create the API application. The way to initiate it was by calling `uvicorn src.group_99.api.main:app` and then after that, you call `streamlit run frontend.py`, which would then open up to a website frontend where you can upload the file you want to predict. The API would then predict the image and give you the result of the prediction, by using the classes trained in the model. The classes were needed to be called by using the load_data function.
 
 ### Question 25
 
@@ -482,7 +483,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 25 fill here ---
+ dd
 
 ### Question 26
 
@@ -497,7 +498,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 26 fill here ---
+ dd
 
 ## Overall discussion of project
 
@@ -516,7 +517,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 27 fill here ---
+ dd
 
 ### Question 28
 
@@ -532,7 +533,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 28 fill here ---
+ dd
 
 ### Question 29
 
@@ -549,7 +550,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 29 fill here ---
+ dd
 
 ### Question 30
 
@@ -563,7 +564,7 @@ These concepts are important for larger project as they streamline the code maki
 >
 > Answer:
 
---- question 30 fill here ---
+ We had many struggles throughout the project, which started when we had a too big dataset for making small MVP as the subsetting we tried did not work as intended. Therefore we changed to a dataset that was more feasible to finish the project in time. Another big issue was the cloud computing which was not working as intended. Many small issues arised like hyperparameter sweep not working and api unit tests not working either, which we decided to not do to focus on the parts of project that were working and improve on them. We would've like to run the cloud computing to try and run a more in-depth test with more epochs and possibly run with different hyperparameters but unfortunately, we had issues with the API access which didn't allow us to use the cloud computing.
 
 ### Question 31
 
@@ -581,4 +582,10 @@ These concepts are important for larger project as they streamline the code maki
 > *We have used ChatGPT to help debug our code. Additionally, we used GitHub Copilot to help write some of our code.*
 > Answer:
 
---- question 31 fill here ---
+ Student s224225 was in charge of setting up the initial git repository and the initial cookie cutter project. Furthermore, the student was in charge of creating the model and train files. The student also set up the frontend api application.
+
+
+
+
+
+ChatGPT and GitHub Copilot was used in the code for debugging and inspiration to help develop parts of the code.
