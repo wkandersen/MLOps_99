@@ -39,7 +39,12 @@ jobs:
         commit_options: '--no-verify'
         file_pattern: ':(exclude).github/workflows/*'
 
-    - name: Log in to WANDB
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install wandb
+        
+    - name: Log in to WANDB    
       env:
         WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
       run: |
