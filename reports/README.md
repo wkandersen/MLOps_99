@@ -620,7 +620,7 @@ The starting point in our main python application that downloads data to the loc
 
  Student s224225 was in charge of setting up the initial git repository and the initial cookie cutter project. Furthermore, the student was in charge of creating the model and train files. The student also set up the frontend api application.
 
- Student s220235 worked on workflows, specifically for dockerfiles, as well as DVC and Google Cloud. Setting up all the services, working on the virtual machines
+ Student s220235 worked on workflows, specifically for dockerfiles, as well as DVC and Google Cloud. Setting up the services, preparing work on the virtual machines (and getting permissions). Helped working on unittests.
 
 Student s224197 worked on pytests and workflows, specifically codecheck, pre-commit hooks and pytests. Furthermore, the student was in charge of the data file.
 
