@@ -622,8 +622,8 @@ The starting point in our main python application that downloads data to the loc
 
  Student s220235 worked on workflows, specifically for dockerfiles, as well as DVC and Google Cloud. Setting up the services, preparing work on the virtual machines (and getting permissions). Helped working on unittests.
 
+Student s224197 worked on pytests and workflows, specifically codecheck, pre-commit hooks and pytests. Furthermore, the student was in charge of the data file.
 
-
-
+All members contributed to the code and helped with debugging.
 
 ChatGPT and GitHub Copilot was used in the code for debugging and inspiration to help develop parts of the code.
